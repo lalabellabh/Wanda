@@ -7,6 +7,7 @@ Security-first foundation for the Wanda local operations assistant.
 - **Deny by default.** Wanda may observe and prepare actions, but external actions require explicit confirmation.
 - **Least privilege.** Separate read/prepare/send capabilities and grant only what is needed.
 - **QR unlock is authentication, not authorization.** A scanned QR must produce a short-lived session; never treat a permanent QR value as a master password.
+- **Manual password is a fallback.** The browser never receives the password hash; the backend verifies it and issues the same short-lived session used by QR unlock.
 - **Local-first camera.** QR camera frames should remain local unless an explicit backend flow requires otherwise.
 - **Backend validation.** Never trust branch, user, order, receiver, or permission data supplied by the browser.
 - **Audit actions.** Log security-relevant events without storing message contents or secrets unnecessarily.
@@ -23,22 +24,39 @@ Wanda/
 ├── backend/      # local security/backend boundary
 ├── js/           # browser-side Wanda and security modules
 ├── index.html    # main operations UI
+├── package.json
+├── .env.example
 ├── README.md
 └── .gitignore
 ```
 
+## Unlock methods
+Wanda supports two authentication paths:
+
+1. **One-time QR unlock** — short-lived challenge/response with replay protection.
+2. **Manual password fallback** — password is configured only on the trusted backend/local machine. It is stored as a salted, memory-hard scrypt hash, never as plaintext in GitHub.
+
+Generate a password hash locally:
+```powershell
+npm run hash-password
+```
+Then put the generated value in your local `.env` as `WANDA_PASSWORD_HASH`. Never commit `.env` or the real password/hash to the repository.
+
+The manual password is intentionally not hardcoded into `index.html` or browser JavaScript. OWASP recommends modern password hashing such as Argon2id or scrypt rather than plaintext or fast hashes. citeturn0search0
+
 ## Local backend
 The backend is a local development skeleton. Node.js 20+ is required.
 
-From `backend/`:
-
+From the repository root:
 ```powershell
-$env:WANDA_DEVICE_SECRET = "replace-with-a-random-secret-at-least-32-bytes"
-$env:WANDA_ORIGIN = "https://lalabellabh.github.io"
-node server.js
+copy .env.example .env
+npm run hash-password
+npm start
 ```
 
-It listens on `127.0.0.1:8787` by default. Never commit a real secret.
+Set `WANDA_DEVICE_SECRET` and the generated `WANDA_PASSWORD_HASH` in `.env`. Never commit the real `.env` file.
+
+It listens on `127.0.0.1:8787` by default.
 
 ## Permission flow
 ```text
@@ -74,4 +92,4 @@ Wanda must not send WhatsApp messages, modify orders, control Chrome, or perform
 5. Add rate limiting and replay protection.
 6. Add server-side authorization for every privileged action.
 7. Keep WhatsApp/order/CCTV connectors behind the backend or a local agent.
-8. Test logout, token expiry, QR replay, origin checks, CSRF protection, and failed authorization paths.
+8. Test logout, token expiry, QR replay, origin checks, CSRF protection, password brute-force protection, and failed authorization paths.
