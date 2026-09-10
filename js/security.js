@@ -2,9 +2,22 @@
 
 const API_BASE = window.WANDA_API_BASE || 'http://127.0.0.1:8787';
 const SESSION_KEY = 'wanda.session.v1';
+const OWNER_QR = 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR';
 const $ = (id) => document.getElementById(id);
 let stream = null;
 let scanning = false;
+
+function speakGreeting() {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const utterance = new SpeechSynthesisUtterance(`${greeting}, dear. Welcome back. Wanda is ready.`);
+  utterance.rate = 0.95;
+  utterance.pitch = 1.05;
+  utterance.volume = 0.9;
+  window.speechSynthesis.speak(utterance);
+}
 
 function setLocked(message = 'No active session.') {
   document.body.classList.remove('is-unlocked');
@@ -17,7 +30,7 @@ function setLocked(message = 'No active session.') {
   $('securityMessage').textContent = message;
 }
 
-function setUnlocked(session) {
+function setUnlocked(session, announce = true) {
   document.body.classList.add('is-unlocked');
   $('securityBadge').textContent = 'UNLOCKED';
   $('securityBadge').className = 'badge ok';
@@ -26,6 +39,7 @@ function setUnlocked(session) {
   $('opsPanel').classList.remove('hidden');
   $('opsPanel').setAttribute('aria-hidden', 'false');
   $('securityMessage').textContent = `Secure session active until ${new Date(session.expiresAt).toLocaleTimeString()}.`;
+  if (announce) speakGreeting();
 }
 
 function stopCamera() {
@@ -76,10 +90,19 @@ function handleScannedValue(value) {
     return true;
   }
 
-  if (value === 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR') {
-    stopCamera();
-    $('securityMessage').textContent = 'Owner QR recognized. Enter your Wanda password to complete secure unlock.';
-    $('wandaPassword').focus();
+  if (value === OWNER_QR) {
+    scanning = false;
+    $('securityMessage').textContent = 'Owner QR recognized. Checking trusted device…';
+    verifyQr(value).catch(error => {
+      if (error.message === 'device_not_trusted') {
+        stopCamera();
+        $('securityMessage').textContent = 'This device needs one-time setup. Enter your Wanda password once to trust this device.';
+        $('wandaPassword').focus();
+      } else {
+        stopCamera();
+        $('securityMessage').textContent = `QR unlock denied: ${error.message}.`;
+      }
+    });
     return true;
   }
 
@@ -157,7 +180,7 @@ async function checkSession() {
     if (!response.ok) return setLocked();
     const session = await response.json();
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    setUnlocked(session);
+    setUnlocked(session, false);
   } catch (_) {
     setLocked('Backend is not reachable. Wanda remains locked.');
   }
