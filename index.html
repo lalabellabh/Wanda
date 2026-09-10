@@ -11,84 +11,77 @@
 </head>
 <body>
   <main class="shell">
-    <header>
-      <div>
-        <p class="eyebrow">LALABELLA · AI OPERATIONS</p>
-        <h1>Wanda</h1>
-        <p class="muted">Secure command center · local agent ready</p>
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">W</div>
+        <div>
+          <p class="eyebrow">LALABELLA · AI OPERATIONS</p>
+          <h1>Wanda</h1>
+          <p class="muted">Your secure operations assistant</p>
+        </div>
       </div>
-      <div class="header-status">
-        <span class="status-label">SECURITY</span>
+      <div class="security-state">
+        <span class="status-light" aria-hidden="true"></span>
         <span id="securityBadge" class="badge">LOCKED</span>
       </div>
     </header>
 
     <section id="unlockPanel" class="card unlock-card">
       <div class="section-heading">
-        <div>
-          <p class="eyebrow">AUTHENTICATION</p>
-          <h2>Secure Unlock</h2>
-        </div>
-        <span class="lock-mark">🔐</span>
+        <div><p class="eyebrow">ACCESS CONTROL</p><h2>Secure Unlock</h2></div>
+        <span class="secure-label">SHORT-LIVED SESSION</span>
       </div>
-      <p>Wanda stays locked until a valid short-lived session is established.</p>
-
+      <p class="muted">Wanda stays locked until a valid authenticated session is established.</p>
       <div class="unlock-options">
         <div class="unlock-option">
-          <h3>📷 QR Unlock</h3>
-          <p class="muted">Use a one-time QR challenge from your trusted device.</p>
+          <div class="option-icon">⌁</div><div><h3>QR Unlock</h3><p class="muted">Use a one-time QR challenge from your trusted device.</p></div>
           <button id="startUnlock" type="button">Start QR Unlock</button>
-          <div id="qrScanner" class="scanner hidden">
-            <video id="qrVideo" playsinline muted></video>
-            <p class="muted">Scan the one-time Wanda QR challenge.</p>
-          </div>
+          <div id="qrScanner" class="scanner hidden"><video id="qrVideo" playsinline muted></video><p class="muted">Scan the one-time Wanda QR challenge.</p></div>
         </div>
-
         <div class="unlock-option">
-          <h3>🔐 Manual Password</h3>
-          <p class="muted">Emergency fallback when QR unlock is unavailable.</p>
-          <form id="passwordForm" class="password-bar">
-            <input id="wandaPassword" type="password" autocomplete="current-password" minlength="15" maxlength="1024" placeholder="Enter Wanda password" aria-label="Wanda manual password">
-            <button type="submit">Unlock</button>
-          </form>
+          <div class="option-icon">⌑</div><div><h3>Manual Password</h3><p class="muted">Emergency fallback when QR unlock is unavailable.</p></div>
+          <form id="passwordForm" class="password-bar"><input id="wandaPassword" type="password" autocomplete="current-password" minlength="15" maxlength="1024" placeholder="Enter Wanda password" aria-label="Wanda manual password"><button type="submit">Unlock</button></form>
         </div>
       </div>
-
       <p id="securityMessage" class="status" role="status">No active session.</p>
     </section>
 
-    <section id="opsPanel" class="card hidden" aria-hidden="true">
-      <div class="command-center-banner">
-        <div>
-          <p class="eyebrow">SECURE SESSION</p>
-          <h2>Wanda Command Center</h2>
-          <p class="muted">Ready to monitor, prepare, and assist.</p>
-        </div>
-        <div class="session-state"><span class="pulse-dot"></span> ACTIVE</div>
+    <section id="opsPanel" class="hidden" aria-hidden="true">
+      <div class="hero-status card">
+        <div><p class="eyebrow">COMMAND CENTER</p><h2>Good evening, Boss.</h2><p class="muted">Wanda is ready. Tell me what you want me to check or prepare.</p></div>
+        <div class="live-pill"><span></span> SECURE SESSION</div>
       </div>
 
-      <div class="wanda-heading">
-        <div>
-          <p class="eyebrow">WANDA ASSISTANT</p>
-          <h2>What can I do for you, Boss?</h2>
-        </div>
-        <span class="online-dot">● ONLINE SHELL</span>
+      <div class="dashboard-grid">
+        <section class="card assistant-card">
+          <div class="wanda-heading">
+            <div class="assistant-title"><div class="assistant-orb" aria-hidden="true"><span>W</span></div><div><p class="eyebrow">WANDA ASSISTANT</p><h2>What can I do for you, Boss?</h2></div></div>
+            <span class="online-dot">● ONLINE SHELL</span>
+          </div>
+          <div id="wandaMessages" class="messages" aria-live="polite">
+            <div class="welcome-state"><div class="welcome-orb">W</div><strong>Wanda is standing by</strong><span>Use voice or type a command below.</span></div>
+          </div>
+          <form id="wandaCommandForm" class="command-bar"><input id="wandaCommand" autocomplete="off" maxlength="500" placeholder="Tell Wanda what to check or prepare…" aria-label="Command Wanda"><button id="voiceButton" class="voice-button" type="button">◉ Voice</button><button class="send-button" type="submit">Send ↗</button></form>
+        </section>
+
+        <aside class="side-column">
+          <section class="card systems-card">
+            <div class="section-heading compact"><div><p class="eyebrow">SYSTEMS</p><h3>Live connections</h3></div><span class="system-count">0 / 4</span></div>
+            <div class="system-list">
+              <div class="system-row"><div class="system-icon whatsapp">W</div><div><b>WhatsApp</b><span>Watcher offline</span></div><i class="connection-dot"></i></div>
+              <div class="system-row"><div class="system-icon orders">O</div><div><b>Orders</b><span>Watcher offline</span></div><i class="connection-dot"></i></div>
+              <div class="system-row"><div class="system-icon cctv">C</div><div><b>CCTV</b><span>Not connected</span></div><i class="connection-dot"></i></div>
+              <div class="system-row"><div class="system-icon chrome">⌘</div><div><b>Chrome Agent</b><span>Not connected</span></div><i class="connection-dot"></i></div>
+            </div>
+          </section>
+          <section class="card activity-card">
+            <div class="section-heading compact"><div><p class="eyebrow">ACTIVITY</p><h3>Recent events</h3></div><span class="tiny muted">SECURE LOG</span></div>
+            <div class="activity-empty"><span class="activity-ring">•</span><strong>No events yet</strong><small>Wanda will show activity here.</small></div>
+          </section>
+        </aside>
       </div>
 
-      <div id="wandaMessages" class="messages" aria-live="polite"></div>
-      <form id="wandaCommandForm" class="command-bar">
-        <input id="wandaCommand" autocomplete="off" maxlength="500" placeholder="Tell Wanda what to check or prepare…" aria-label="Command Wanda">
-        <button id="voiceButton" type="button">🎙 Voice</button>
-        <button type="submit">Send</button>
-      </form>
-
-      <div class="grid">
-        <div class="tile"><span class="tile-icon">💬</span><b>WhatsApp</b><span>Watcher offline</span></div>
-        <div class="tile"><span class="tile-icon">📦</span><b>Orders</b><span>Watcher offline</span></div>
-        <div class="tile"><span class="tile-icon">📹</span><b>CCTV</b><span>Not connected</span></div>
-        <div class="tile"><span class="tile-icon">🌐</span><b>Chrome Agent</b><span>Not connected</span></div>
-      </div>
-      <button id="lockNow" class="danger" type="button">🔒 Lock Wanda</button>
+      <div class="bottom-bar"><span class="session-note">● Secure session active</span><button id="lockNow" class="danger" type="button">Lock Wanda</button></div>
     </section>
   </main>
   <script src="js/security.js" defer></script>
