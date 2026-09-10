@@ -1,12 +1,12 @@
 'use strict';
 
 /* Wanda's local assistant shell. No external AI key is stored in the browser. */
-const $ = (id) => document.getElementById(id);
+const getEl = (id) => document.getElementById(id);
 const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
 let recognition = null;
 
 function addMessage(role, text) {
-  const box = $('wandaMessages');
+  const box = getEl('wandaMessages');
   const item = document.createElement('div');
   item.className = `message ${role}`;
   item.textContent = text;
@@ -59,8 +59,8 @@ function startVoice() {
   if (recognition) {
     recognition.stop();
     recognition = null;
-    $('voiceButton').classList.remove('listening');
-    $('voiceButton').textContent = '🎙 Voice';
+    getEl('voiceButton').classList.remove('listening');
+    getEl('voiceButton').textContent = '🎙 Voice';
     return;
   }
   recognition = new SpeechRecognition();
@@ -68,26 +68,26 @@ function startVoice() {
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
   recognition.onstart = () => {
-    $('voiceButton').classList.add('listening');
-    $('voiceButton').textContent = '🔴 Listening';
+    getEl('voiceButton').classList.add('listening');
+    getEl('voiceButton').textContent = '🔴 Listening';
   };
   recognition.onresult = (event) => handleCommand(event.results[0][0].transcript);
   recognition.onerror = () => reply('I could not hear that clearly, Boss.', false);
   recognition.onend = () => {
     recognition = null;
-    $('voiceButton').classList.remove('listening');
-    $('voiceButton').textContent = '🎙 Voice';
+    getEl('voiceButton').classList.remove('listening');
+    getEl('voiceButton').textContent = '🎙 Voice';
   };
   recognition.start();
 }
 
-$('wandaCommandForm').addEventListener('submit', (event) => {
+getEl('wandaCommandForm').addEventListener('submit', (event) => {
   event.preventDefault();
-  const input = $('wandaCommand');
+  const input = getEl('wandaCommand');
   handleCommand(input.value);
   input.value = '';
   input.focus();
 });
-$('voiceButton').addEventListener('click', startVoice);
+getEl('voiceButton').addEventListener('click', startVoice);
 
 addMessage('wanda', 'Hi Boss. I am Wanda. Secure mode is active. What do you want me to check?');
