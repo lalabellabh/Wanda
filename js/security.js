@@ -7,19 +7,25 @@ let stream = null;
 let scanning = false;
 
 function setLocked(message = 'No active session.') {
+  document.body.classList.remove('is-unlocked');
   $('securityBadge').textContent = 'LOCKED';
   $('securityBadge').className = 'badge';
+  $('unlockPanel').classList.remove('hidden');
+  $('unlockPanel').setAttribute('aria-hidden', 'false');
   $('opsPanel').classList.add('hidden');
   $('opsPanel').setAttribute('aria-hidden', 'true');
   $('securityMessage').textContent = message;
 }
 
 function setUnlocked(session) {
+  document.body.classList.add('is-unlocked');
   $('securityBadge').textContent = 'UNLOCKED';
   $('securityBadge').className = 'badge ok';
+  $('unlockPanel').classList.add('hidden');
+  $('unlockPanel').setAttribute('aria-hidden', 'true');
   $('opsPanel').classList.remove('hidden');
   $('opsPanel').setAttribute('aria-hidden', 'false');
-  $('securityMessage').textContent = `Session active until ${new Date(session.expiresAt).toLocaleTimeString()}.`;
+  $('securityMessage').textContent = `Secure session active until ${new Date(session.expiresAt).toLocaleTimeString()}.`;
 }
 
 function stopCamera() {
