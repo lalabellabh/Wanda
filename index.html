@@ -32,7 +32,21 @@
     </section>
 
     <section id="opsPanel" class="card hidden" aria-hidden="true">
-      <h2>Operations</h2>
+      <div class="wanda-heading">
+        <div>
+          <p class="eyebrow">WANDA ASSISTANT</p>
+          <h2>What can I do for you, Boss?</h2>
+        </div>
+        <span class="online-dot">● ONLINE SHELL</span>
+      </div>
+
+      <div id="wandaMessages" class="messages" aria-live="polite"></div>
+      <form id="wandaCommandForm" class="command-bar">
+        <input id="wandaCommand" autocomplete="off" maxlength="500" placeholder="Tell Wanda what to check or prepare…" aria-label="Command Wanda">
+        <button id="voiceButton" type="button">🎙 Voice</button>
+        <button type="submit">Send</button>
+      </form>
+
       <div class="grid">
         <div class="tile"><b>WhatsApp</b><span>Watcher offline</span></div>
         <div class="tile"><b>Orders</b><span>Watcher offline</span></div>
@@ -43,5 +57,6 @@
     </section>
   </main>
   <script src="js/security.js" defer></script>
+  <script src="js/wanda.js" defer></script>
 </body>
 </html>
