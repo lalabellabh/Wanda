@@ -183,11 +183,15 @@ async function scanQr() {
 async function checkSession() {
   try {
     const response = await fetch(`${API_BASE}/auth/session`, { credentials: 'include', cache: 'no-store' });
-    if (!response.ok) return setLocked();
+    if (response.status === 401) return setLocked('Wanda is locked. Unlock with your Owner QR or manual password.');
+    if (!response.ok) return setLocked(`Wanda security service returned HTTP ${response.status}.`);
     const session = await response.json();
+    if (!session?.ok) return setLocked('Wanda is locked. Unlock with your Owner QR or manual password.');
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     setUnlocked(session, false);
-  } catch (_) { setLocked('Backend is not reachable. Wanda remains locked.'); }
+  } catch (_) {
+    setLocked('Backend is not reachable. Wanda remains locked.');
+  }
 }
 
 async function lockWanda() {
