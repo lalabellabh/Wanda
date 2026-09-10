@@ -1,10 +1,54 @@
 import crypto from 'node:crypto';
-import readline from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
 
-const rl = readline.createInterface({ input, output });
+function readHidden(prompt) {
+  return new Promise((resolve, reject) => {
+    const stdin = process.stdin;
+    const stdout = process.stdout;
+    if (!stdin.isTTY || !stdout.isTTY || typeof stdin.setRawMode !== 'function') {
+      reject(new Error('Run this password setup from an interactive terminal.'));
+      return;
+    }
+
+    stdout.write(prompt);
+    stdin.setRawMode(true);
+    stdin.resume();
+    stdin.setEncoding('utf8');
+    let value = '';
+
+    const cleanup = () => {
+      stdin.setRawMode(false);
+      stdin.pause();
+      stdin.removeListener('data', onData);
+    };
+
+    const onData = (chunk) => {
+      for (const char of chunk) {
+        if (char === '\u0003') {
+          cleanup();
+          stdout.write('\n');
+          reject(new Error('Cancelled.'));
+          return;
+        }
+        if (char === '\r' || char === '\n') {
+          cleanup();
+          stdout.write('\n');
+          resolve(value);
+          return;
+        }
+        if (char === '\u0008' || char === '\u007f') {
+          if (value.length) value = value.slice(0, -1);
+          continue;
+        }
+        value += char;
+      }
+    };
+
+    stdin.on('data', onData);
+  });
+}
+
 try {
-  const password = await rl.question('Enter Wanda manual password (not stored in this script): ');
+  const password = await readHidden('Enter Wanda manual password (hidden): ');
   if (password.length < 15) throw new Error('Password must be at least 15 characters.');
   if (Buffer.byteLength(password, 'utf8') > 1024) throw new Error('Password is too long.');
 
@@ -19,6 +63,7 @@ try {
   });
 
   console.log(`scrypt$N=${N},r=${r},p=${p}$${salt.toString('base64url')}$${key.toString('base64url')}`);
-} finally {
-  rl.close();
+} catch (error) {
+  console.error(`Password setup failed: ${error.message}`);
+  process.exitCode = 1;
 }
