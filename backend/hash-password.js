@@ -9,9 +9,12 @@ function readHiddenWindows(prompt) {
     "try { [Runtime.InteropServices.Marshal]::PtrToStringBSTR($b) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b) }"
   ].join('; ');
 
-  const result = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
+  const result = spawnSync('powershell.exe', ['-NoProfile', '-Command', script], {
     encoding: 'utf8',
     windowsHide: false,
+    stdin: 'inherit',
+    stdout: 'pipe',
+    stderr: 'pipe',
     maxBuffer: 16 * 1024
   });
 
