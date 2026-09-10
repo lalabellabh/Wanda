@@ -11,7 +11,6 @@ const SESSION_TTL_MS = 10 * 60_000;
 const TRUST_TTL_MS = 30 * 24 * 60 * 60_000;
 const MAX_QR_ATTEMPTS = 5;
 const MAX_PASSWORD_ATTEMPTS = 5;
-const OWNER_QR = 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR';
 
 if (!DEVICE_SECRET || Buffer.byteLength(DEVICE_SECRET) < 32) {
   console.error('WANDA_DEVICE_SECRET must be set and contain at least 32 bytes.');
@@ -26,6 +25,7 @@ const passwordAttempts = new Map();
 
 const now = () => Date.now();
 const randomToken = (bytes = 32) => crypto.randomBytes(bytes).toString('base64url');
+const hashToken = (token) => crypto.createHash('sha256').update(token).digest('base64url');
 const safeEqual = (a, b) => {
   const aa = Buffer.from(a);
   const bb = Buffer.from(b);
@@ -110,12 +110,6 @@ function newSession() {
   return id;
 }
 
-function newTrustedDevice() {
-  const id = randomToken(32);
-  trustedDevices.set(id, { id, createdAt: now(), expiresAt: now() + TRUST_TTL_MS });
-  return id;
-}
-
 function authenticated(req) {
   const sid = parseCookies(req).wanda_session;
   if (!sid) return null;
@@ -125,17 +119,6 @@ function authenticated(req) {
     return null;
   }
   return s;
-}
-
-function trusted(req) {
-  const id = parseCookies(req).wanda_device;
-  if (!id) return false;
-  const d = trustedDevices.get(id);
-  if (!d || d.expiresAt <= now()) {
-    if (d) trustedDevices.delete(id);
-    return false;
-  }
-  return true;
 }
 
 async function verifyPassword(password) {
@@ -148,9 +131,7 @@ async function verifyPassword(password) {
   const p = Number(params.p);
   const salt = Buffer.from(parts[2], 'base64url');
   const expected = Buffer.from(parts[3], 'base64url');
-  if (!Number.isSafeInteger(N) || !Number.isSafeInteger(r) || !Number.isSafeInteger(p) || !salt.length || !expected.length) {
-    throw new Error('invalid_password_configuration');
-  }
+  if (!Number.isSafeInteger(N) || !Number.isSafeInteger(r) || !Number.isSafeInteger(p) || !salt.length || !expected.length) throw new Error('invalid_password_configuration');
   const derived = await new Promise((resolve, reject) => {
     crypto.scrypt(password, salt, expected.length, { N, r, p, maxmem: 256 * 1024 * 1024 }, (err, key) => {
       if (err) reject(err); else resolve(key);
@@ -167,11 +148,17 @@ function passwordLimiter(ip) {
   return a.count <= MAX_PASSWORD_ATTEMPTS;
 }
 
-function sessionResponse(res, sid, extraCookie = '') {
-  const cookie = `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`;
-  return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt }, {
-    'Set-Cookie': extraCookie ? [cookie, extraCookie] : cookie
-  });
+function trustedDevice(token) {
+  if (!token || token.length < 32 || token.length > 256) return null;
+  const record = trustedDevices.get(hashToken(token));
+  if (!record || record.expiresAt <= now()) return null;
+  return record;
+}
+
+function trustDevice() {
+  const token = randomToken(32);
+  trustedDevices.set(hashToken(token), { createdAt: now(), expiresAt: now() + TRUST_TTL_MS });
+  return token;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -189,13 +176,8 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${HOST}:${PORT}`);
 
-    if (url.pathname === '/health' && req.method === 'GET') {
-      return json(res, 200, { ok: true, service: 'wanda-backend' });
-    }
-
-    if (url.pathname === '/auth/challenge' && req.method === 'POST') {
-      return json(res, 200, { ok: true, ...issueChallenge() });
-    }
+    if (url.pathname === '/health' && req.method === 'GET') return json(res, 200, { ok: true, service: 'wanda-backend' });
+    if (url.pathname === '/auth/challenge' && req.method === 'POST') return json(res, 200, { ok: true, ...issueChallenge() });
 
     if (url.pathname === '/auth/qr/verify' && req.method === 'POST') {
       const ip = req.socket.remoteAddress || 'unknown';
@@ -204,30 +186,31 @@ const server = http.createServer(async (req, res) => {
       if (a.count >= MAX_QR_ATTEMPTS) return json(res, 429, { ok: false, error: 'rate_limited' });
       a.count += 1;
       qrAttempts.set(ip, a);
-
       const body = await readJson(req);
       if (typeof body.payload !== 'string' || body.payload.length > 4096) return json(res, 400, { ok: false, error: 'invalid_payload' });
-
-      if (body.payload === OWNER_QR) {
-        if (!trusted(req)) return json(res, 401, { ok: false, error: 'device_not_trusted' });
-        const sid = newSession();
-        qrAttempts.delete(ip);
-        return sessionResponse(res, sid);
-      }
-
       verifyChallenge(body.payload);
       const sid = newSession();
       qrAttempts.delete(ip);
-      return sessionResponse(res, sid);
+      return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt }, {
+        'Set-Cookie': `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`
+      });
+    }
+
+    if (url.pathname === '/auth/qr/owner-verify' && req.method === 'POST') {
+      const body = await readJson(req);
+      if (body.ownerQr !== 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR') return json(res, 401, { ok: false, error: 'invalid_owner_qr' });
+      if (!trustedDevice(body.deviceToken)) return json(res, 401, { ok: false, error: 'device_not_trusted' });
+      const sid = newSession();
+      return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt }, {
+        'Set-Cookie': `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`
+      });
     }
 
     if (url.pathname === '/auth/password/verify' && req.method === 'POST') {
       const ip = req.socket.remoteAddress || 'unknown';
       if (!passwordLimiter(ip)) return json(res, 429, { ok: false, error: 'rate_limited' });
       const body = await readJson(req);
-      if (typeof body.password !== 'string' || body.password.length < 15 || Buffer.byteLength(body.password, 'utf8') > 1024) {
-        return json(res, 401, { ok: false, error: 'invalid_credentials' });
-      }
+      if (typeof body.password !== 'string' || body.password.length < 15 || Buffer.byteLength(body.password, 'utf8') > 1024) return json(res, 401, { ok: false, error: 'invalid_credentials' });
       let valid = false;
       try { valid = await verifyPassword(body.password); } catch (error) {
         console.warn('password_auth_error', error.message);
@@ -236,9 +219,14 @@ const server = http.createServer(async (req, res) => {
       if (!valid) return json(res, 401, { ok: false, error: 'invalid_credentials' });
       passwordAttempts.delete(ip);
       const sid = newSession();
-      const deviceId = newTrustedDevice();
-      const deviceCookie = `wanda_device=${encodeURIComponent(deviceId)}; Path=/; Max-Age=${Math.floor(TRUST_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`;
-      return sessionResponse(res, sid, deviceCookie);
+      const headers = {
+        'Set-Cookie': `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`
+      };
+      let deviceToken;
+      if (body.trustDevice === true) {
+        deviceToken = trustDevice();
+      }
+      return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt, deviceToken }, headers);
     }
 
     if (url.pathname === '/auth/session' && req.method === 'GET') {
@@ -248,14 +236,9 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.pathname === '/auth/logout' && req.method === 'POST') {
-      const cookies = parseCookies(req);
-      if (cookies.wanda_session) sessions.delete(cookies.wanda_session);
-      return json(res, 200, { ok: true }, {
-        'Set-Cookie': [
-          'wanda_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict',
-          'wanda_device=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict'
-        ]
-      });
+      const sid = parseCookies(req).wanda_session;
+      if (sid) sessions.delete(sid);
+      return json(res, 200, { ok: true }, { 'Set-Cookie': 'wanda_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict' });
     }
 
     if (url.pathname === '/ops/prepare' && req.method === 'POST') {
@@ -271,6 +254,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`Wanda backend listening on http://${HOST}:${PORT}`);
-});
+server.listen(PORT, HOST, () => console.log(`Wanda backend listening on http://${HOST}:${PORT}`));
