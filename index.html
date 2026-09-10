@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https:; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https: http://127.0.0.1:8787; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
   <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(self), payment=(), usb=(), serial=()">
   <title>Wanda — Lalabella AI Operations Center</title>
   <link rel="stylesheet" href="assets/wanda.css">
@@ -24,6 +24,10 @@
       <h2>Secure Unlock</h2>
       <p>Wanda stays locked until a valid short-lived session is established.</p>
       <button id="startUnlock" type="button">Start QR Unlock</button>
+      <div id="qrScanner" class="scanner hidden">
+        <video id="qrVideo" playsinline muted></video>
+        <p class="muted">Scan the one-time Wanda QR challenge.</p>
+      </div>
       <p id="securityMessage" class="status" role="status">No active session.</p>
     </section>
 
