@@ -2,6 +2,7 @@
 
 const API_BASE = window.WANDA_API_BASE || 'http://127.0.0.1:8787';
 const SESSION_KEY = 'wanda.session.v1';
+const DEVICE_KEY = 'wanda.trusted-device.v1';
 const OWNER_QR = 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR';
 const $ = (id) => document.getElementById(id);
 let stream = null;
@@ -53,9 +54,7 @@ function stopCamera() {
 
 async function verifyQr(payload) {
   const response = await fetch(`${API_BASE}/auth/qr/verify`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ payload })
   });
   const data = await response.json().catch(() => ({}));
@@ -65,15 +64,27 @@ async function verifyQr(payload) {
   setUnlocked(data);
 }
 
-async function verifyPassword(password) {
+async function verifyOwnerQr() {
+  const deviceToken = localStorage.getItem(DEVICE_KEY);
+  const response = await fetch(`${API_BASE}/auth/qr/owner-verify`, {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ownerQr: OWNER_QR, deviceToken })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.ok) throw new Error(data.error || 'unlock_failed');
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ expiresAt: data.expiresAt }));
+  stopCamera();
+  setUnlocked(data);
+}
+
+async function verifyPassword(password, trustDevice = false) {
   const response = await fetch(`${API_BASE}/auth/password/verify`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password })
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password, trustDevice })
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok || !data.ok) throw new Error(data.error || 'invalid_credentials');
+  if (data.deviceToken) localStorage.setItem(DEVICE_KEY, data.deviceToken);
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ expiresAt: data.expiresAt }));
   setUnlocked(data);
 }
@@ -93,10 +104,10 @@ function handleScannedValue(value) {
   if (value === OWNER_QR) {
     scanning = false;
     $('securityMessage').textContent = 'Owner QR recognized. Checking trusted device…';
-    verifyQr(value).catch(error => {
+    verifyOwnerQr().catch(error => {
       if (error.message === 'device_not_trusted') {
         stopCamera();
-        $('securityMessage').textContent = 'This device needs one-time setup. Enter your Wanda password once to trust this device.';
+        $('securityMessage').textContent = 'One-time setup: enter your Wanda password to trust this device.';
         $('wandaPassword').focus();
       } else {
         stopCamera();
@@ -140,7 +151,6 @@ async function scanQr() {
     $('securityMessage').textContent = 'Camera access is unavailable in this browser. Use the manual password fallback.';
     return;
   }
-
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
     const video = $('qrVideo');
@@ -148,7 +158,6 @@ async function scanQr() {
     await video.play();
     $('qrScanner').classList.remove('hidden');
     $('securityMessage').textContent = 'Camera active. Point it at your Wanda QR.';
-
     if ('BarcodeDetector' in window) {
       try {
         const detector = new BarcodeDetector({ formats: ['qr_code'] });
@@ -162,11 +171,8 @@ async function scanQr() {
           await new Promise(resolve => setTimeout(resolve, 120));
         }
         return;
-      } catch (_) {
-        scanning = false;
-      }
+      } catch (_) { scanning = false; }
     }
-
     await scanQrWithJsQR(video);
   } catch (error) {
     stopCamera();
@@ -181,15 +187,11 @@ async function checkSession() {
     const session = await response.json();
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     setUnlocked(session, false);
-  } catch (_) {
-    setLocked('Backend is not reachable. Wanda remains locked.');
-  }
+  } catch (_) { setLocked('Backend is not reachable. Wanda remains locked.'); }
 }
 
 async function lockWanda() {
-  try {
-    await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
-  } catch (_) {}
+  try { await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }); } catch (_) {}
   sessionStorage.removeItem(SESSION_KEY);
   $('wandaPassword').value = '';
   stopCamera();
@@ -207,15 +209,13 @@ $('passwordForm').addEventListener('submit', async (event) => {
   }
   $('securityMessage').textContent = 'Checking manual password…';
   try {
-    await verifyPassword(password);
+    const firstSetup = !localStorage.getItem(DEVICE_KEY);
+    await verifyPassword(password, firstSetup);
     input.value = '';
   } catch (error) {
     input.value = '';
-    $('securityMessage').textContent = error.message === 'rate_limited'
-      ? 'Too many attempts. Try again in about one minute.'
-      : 'Manual unlock denied.';
+    $('securityMessage').textContent = error.message === 'rate_limited' ? 'Too many attempts. Try again in about one minute.' : 'Manual unlock denied.';
   }
 });
 $('lockNow').addEventListener('click', lockWanda);
-
 checkSession();
