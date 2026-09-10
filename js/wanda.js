@@ -16,11 +16,15 @@ function addMessage(role, text) {
 
 function speak(text) {
   if (!synth) return;
+  if (typeof window.WandaVoice === 'function') {
+    window.WandaVoice(text, { rate: 0.96, pitch: 1.08, volume: 0.9 });
+    return;
+  }
   synth.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'en-US';
   utterance.rate = 0.96;
-  utterance.pitch = 1.02;
+  utterance.pitch = 1.08;
   synth.speak(utterance);
 }
 
