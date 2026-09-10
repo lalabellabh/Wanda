@@ -1,46 +1,22 @@
 import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 
-function readHiddenWindows(prompt) {
-  const script = [
-    "$ErrorActionPreference = 'Stop'",
-    `$s = Read-Host '${prompt.replace(/'/g, "''")}' -AsSecureString`,
-    "$b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s)",
-    "try { [Runtime.InteropServices.Marshal]::PtrToStringBSTR($b) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b) }"
-  ].join('; ');
-
-  const result = spawnSync('powershell.exe', ['-NoProfile', '-Command', script], {
-    encoding: 'utf8',
-    windowsHide: false,
-    stdin: 'inherit',
-    stdout: 'pipe',
-    stderr: 'pipe',
-    maxBuffer: 16 * 1024
-  });
-
-  if (result.error) throw result.error;
-  if (result.status !== 0) throw new Error((result.stderr || 'Password input failed.').trim());
-  return (result.stdout || '').trimEnd();
-}
-
-async function readHidden(prompt) {
-  if (process.platform === 'win32') return readHiddenWindows(prompt);
-
+function readHidden(prompt) {
   const stdin = process.stdin;
   const stdout = process.stdout;
+
   if (!stdin.isTTY || !stdout.isTTY || typeof stdin.setRawMode !== 'function') {
     throw new Error('Run this password setup from an interactive terminal.');
   }
 
   return new Promise((resolve, reject) => {
-    stdout.write(prompt);
+    stdout.write(`${prompt}: `);
     stdin.setRawMode(true);
     stdin.resume();
     stdin.setEncoding('utf8');
     let value = '';
 
     const cleanup = () => {
-      stdin.setRawMode(false);
+      try { stdin.setRawMode(false); } catch {}
       stdin.pause();
       stdin.removeListener('data', onData);
     };
@@ -53,17 +29,26 @@ async function readHidden(prompt) {
           reject(new Error('Cancelled.'));
           return;
         }
+
         if (char === '\r' || char === '\n') {
           cleanup();
           stdout.write('\n');
           resolve(value);
           return;
         }
+
         if (char === '\u0008' || char === '\u007f') {
-          if (value.length) value = value.slice(0, -1);
+          if (value.length) {
+            value = value.slice(0, -1);
+            stdout.write('\b \b');
+          }
           continue;
         }
-        value += char;
+
+        if (char >= ' ' && char !== '\u007f') {
+          value += char;
+          stdout.write('*');
+        }
       }
     };
 
