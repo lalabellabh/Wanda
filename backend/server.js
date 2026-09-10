@@ -5,9 +5,11 @@ const HOST = process.env.WANDA_HOST || '127.0.0.1';
 const PORT = Number(process.env.WANDA_PORT || 8787);
 const ORIGIN = process.env.WANDA_ORIGIN || 'https://lalabellabh.github.io';
 const DEVICE_SECRET = process.env.WANDA_DEVICE_SECRET;
+const PASSWORD_HASH = process.env.WANDA_PASSWORD_HASH;
 const CHALLENGE_TTL_MS = 60_000;
 const SESSION_TTL_MS = 10 * 60_000;
 const MAX_QR_ATTEMPTS = 5;
+const MAX_PASSWORD_ATTEMPTS = 5;
 
 if (!DEVICE_SECRET || Buffer.byteLength(DEVICE_SECRET) < 32) {
   console.error('WANDA_DEVICE_SECRET must be set and contain at least 32 bytes.');
@@ -16,11 +18,11 @@ if (!DEVICE_SECRET || Buffer.byteLength(DEVICE_SECRET) < 32) {
 
 const challenges = new Map();
 const sessions = new Map();
-const attempts = new Map();
+const qrAttempts = new Map();
+const passwordAttempts = new Map();
 
 const now = () => Date.now();
 const randomToken = (bytes = 32) => crypto.randomBytes(bytes).toString('base64url');
-const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
 const safeEqual = (a, b) => {
   const aa = Buffer.from(a);
   const bb = Buffer.from(b);
@@ -56,7 +58,8 @@ function cleanExpired() {
   const t = now();
   for (const [id, c] of challenges) if (c.expiresAt <= t) challenges.delete(id);
   for (const [id, s] of sessions) if (s.expiresAt <= t) sessions.delete(id);
-  for (const [ip, a] of attempts) if (a.resetAt <= t) attempts.delete(ip);
+  for (const [ip, a] of qrAttempts) if (a.resetAt <= t) qrAttempts.delete(ip);
+  for (const [ip, a] of passwordAttempts) if (a.resetAt <= t) passwordAttempts.delete(ip);
 }
 
 function readJson(req) {
@@ -78,7 +81,6 @@ function issueChallenge() {
   const nonce = randomToken(32);
   const expiresAt = now() + CHALLENGE_TTL_MS;
   challenges.set(id, { nonce, expiresAt, used: false });
-  // QR payload contains no permanent secret. It is useless after expiry/use.
   const payload = `wanda://unlock?v=1&id=${encodeURIComponent(id)}&nonce=${encodeURIComponent(nonce)}&exp=${expiresAt}&sig=${encodeURIComponent(sign(`${id}.${nonce}.${expiresAt}`))}`;
   return { id, payload, expiresAt };
 }
@@ -115,6 +117,35 @@ function authenticated(req) {
   return s;
 }
 
+async function verifyPassword(password) {
+  if (!PASSWORD_HASH) throw new Error('password_auth_not_configured');
+  const parts = PASSWORD_HASH.split('$');
+  if (parts.length !== 4 || parts[0] !== 'scrypt') throw new Error('invalid_password_configuration');
+  const params = Object.fromEntries(parts[1].split(',').map(part => part.split('=')));
+  const N = Number(params.N);
+  const r = Number(params.r);
+  const p = Number(params.p);
+  const salt = Buffer.from(parts[2], 'base64url');
+  const expected = Buffer.from(parts[3], 'base64url');
+  if (!Number.isSafeInteger(N) || !Number.isSafeInteger(r) || !Number.isSafeInteger(p) || !salt.length || !expected.length) {
+    throw new Error('invalid_password_configuration');
+  }
+  const derived = await new Promise((resolve, reject) => {
+    crypto.scrypt(password, salt, expected.length, { N, r, p, maxmem: 256 * 1024 * 1024 }, (err, key) => {
+      if (err) reject(err); else resolve(key);
+    });
+  });
+  return safeEqual(derived, expected);
+}
+
+function passwordLimiter(ip) {
+  const a = passwordAttempts.get(ip) || { count: 0, resetAt: now() + 60_000 };
+  if (a.resetAt <= now()) { a.count = 0; a.resetAt = now() + 60_000; }
+  a.count += 1;
+  passwordAttempts.set(ip, a);
+  return a.count <= MAX_PASSWORD_ATTEMPTS;
+}
+
 const server = http.createServer(async (req, res) => {
   cleanExpired();
   if (req.method === 'OPTIONS') {
@@ -140,17 +171,37 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname === '/auth/qr/verify' && req.method === 'POST') {
       const ip = req.socket.remoteAddress || 'unknown';
-      const a = attempts.get(ip) || { count: 0, resetAt: now() + 60_000 };
+      const a = qrAttempts.get(ip) || { count: 0, resetAt: now() + 60_000 };
       if (a.resetAt <= now()) { a.count = 0; a.resetAt = now() + 60_000; }
       if (a.count >= MAX_QR_ATTEMPTS) return json(res, 429, { ok: false, error: 'rate_limited' });
       a.count += 1;
-      attempts.set(ip, a);
+      qrAttempts.set(ip, a);
 
       const body = await readJson(req);
       if (typeof body.payload !== 'string' || body.payload.length > 4096) return json(res, 400, { ok: false, error: 'invalid_payload' });
       verifyChallenge(body.payload);
       const sid = newSession();
-      attempts.delete(ip);
+      qrAttempts.delete(ip);
+      return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt }, {
+        'Set-Cookie': `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`
+      });
+    }
+
+    if (url.pathname === '/auth/password/verify' && req.method === 'POST') {
+      const ip = req.socket.remoteAddress || 'unknown';
+      if (!passwordLimiter(ip)) return json(res, 429, { ok: false, error: 'rate_limited' });
+      const body = await readJson(req);
+      if (typeof body.password !== 'string' || body.password.length < 15 || Buffer.byteLength(body.password, 'utf8') > 1024) {
+        return json(res, 401, { ok: false, error: 'invalid_credentials' });
+      }
+      let valid = false;
+      try { valid = await verifyPassword(body.password); } catch (error) {
+        console.warn('password_auth_error', error.message);
+        return json(res, 503, { ok: false, error: 'password_auth_unavailable' });
+      }
+      if (!valid) return json(res, 401, { ok: false, error: 'invalid_credentials' });
+      passwordAttempts.delete(ip);
+      const sid = newSession();
       return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt }, {
         'Set-Cookie': `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`
       });
