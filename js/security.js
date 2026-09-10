@@ -45,9 +45,22 @@ async function verifyQr(payload) {
   setUnlocked(data);
 }
 
+async function verifyPassword(password) {
+  const response = await fetch(`${API_BASE}/auth/password/verify`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.ok) throw new Error(data.error || 'invalid_credentials');
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ expiresAt: data.expiresAt }));
+  setUnlocked(data);
+}
+
 async function scanQr() {
   if (!('BarcodeDetector' in window)) {
-    $('securityMessage').textContent = 'This browser does not provide QR scanning. Use a browser with BarcodeDetector support or add the local QR decoder in the next build.';
+    $('securityMessage').textContent = 'This browser does not provide QR scanning. Use the manual password fallback or a browser with BarcodeDetector support.';
     return;
   }
 
@@ -100,11 +113,31 @@ async function lockWanda() {
     await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
   } catch (_) {}
   sessionStorage.removeItem(SESSION_KEY);
+  $('wandaPassword').value = '';
   stopCamera();
   setLocked('Wanda locked.');
 }
 
 $('startUnlock').addEventListener('click', scanQr);
+$('passwordForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const input = $('wandaPassword');
+  const password = input.value;
+  if (password.length < 15) {
+    $('securityMessage').textContent = 'Password must be at least 15 characters.';
+    return;
+  }
+  $('securityMessage').textContent = 'Checking manual password…';
+  try {
+    await verifyPassword(password);
+    input.value = '';
+  } catch (error) {
+    input.value = '';
+    $('securityMessage').textContent = error.message === 'rate_limited'
+      ? 'Too many attempts. Try again in about one minute.'
+      : 'Manual unlock denied.';
+  }
+});
 $('lockNow').addEventListener('click', lockWanda);
 
 // Client state is only a display convenience. The backend remains authoritative.
