@@ -1,6 +1,6 @@
 'use strict';
 
-const API_BASE = window.WANDA_API_BASE || 'http://localhost:8787';
+const API_BASE = window.WANDA_API_BASE || 'http://127.0.0.1:8787';
 const SESSION_KEY = 'wanda.session.v1';
 const DEVICE_KEY = 'wanda.trusted-device.v1';
 const OWNER_QR = 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR';
