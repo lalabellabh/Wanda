@@ -1,0 +1,13 @@
+{
+  "name": "wanda-lalabella",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node backend/server.js",
+    "hash-password": "node backend/hash-password.js"
+  }
+}
