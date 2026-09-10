@@ -64,38 +64,87 @@ async function verifyPassword(password) {
   setUnlocked(data);
 }
 
+function handleScannedValue(value) {
+  if (!value) return false;
+  if (value.startsWith('wanda://unlock?')) {
+    scanning = false;
+    $('securityMessage').textContent = 'One-time Wanda QR detected. Validating…';
+    verifyQr(value).catch(error => {
+      $('securityMessage').textContent = `QR unlock denied: ${error.message}.`;
+      scanning = true;
+    });
+    return true;
+  }
+
+  if (value === 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR') {
+    stopCamera();
+    $('securityMessage').textContent = 'Owner QR recognized. Enter your Wanda password to complete secure unlock.';
+    $('wandaPassword').focus();
+    return true;
+  }
+
+  $('securityMessage').textContent = 'QR detected, but it is not a valid Wanda unlock code.';
+  return false;
+}
+
+function createCanvas() {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'qr-canvas';
+  return canvas;
+}
+
+async function scanQrWithJsQR(video) {
+  if (typeof window.jsQR !== 'function') throw new Error('QR decoder is unavailable.');
+  const canvas = createCanvas();
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  scanning = true;
+  while (scanning) {
+    if (video.readyState >= 2 && video.videoWidth && video.videoHeight) {
+      const scale = Math.min(1, 720 / video.videoWidth);
+      canvas.width = Math.max(320, Math.floor(video.videoWidth * scale));
+      canvas.height = Math.max(240, Math.floor(video.videoHeight * scale));
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = window.jsQR(image.data, image.width, image.height, { inversionAttempts: 'attemptBoth' });
+      if (code?.data) handleScannedValue(code.data);
+    }
+    await new Promise(resolve => setTimeout(resolve, 180));
+  }
+}
+
 async function scanQr() {
-  if (!('BarcodeDetector' in window)) {
-    $('securityMessage').textContent = 'This browser does not provide QR scanning. Use the manual password fallback or a browser with BarcodeDetector support.';
+  if (!navigator.mediaDevices?.getUserMedia) {
+    $('securityMessage').textContent = 'Camera access is unavailable in this browser. Use the manual password fallback.';
     return;
   }
 
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
     const video = $('qrVideo');
     video.srcObject = stream;
     await video.play();
     $('qrScanner').classList.remove('hidden');
-    $('securityMessage').textContent = 'Point the camera at the Wanda unlock QR.';
-    const detector = new BarcodeDetector({ formats: ['qr_code'] });
-    scanning = true;
+    $('securityMessage').textContent = 'Camera active. Point it at your Wanda QR.';
 
-    while (scanning) {
-      if (video.readyState >= 2) {
-        const codes = await detector.detect(video);
-        const value = codes?.[0]?.rawValue;
-        if (value) {
-          scanning = false;
-          $('securityMessage').textContent = 'QR detected. Validating…';
-          try { await verifyQr(value); }
-          catch (error) {
-            $('securityMessage').textContent = `Unlock denied: ${error.message}.`;
-            scanning = true;
+    if ('BarcodeDetector' in window) {
+      try {
+        const detector = new BarcodeDetector({ formats: ['qr_code'] });
+        scanning = true;
+        while (scanning) {
+          if (video.readyState >= 2) {
+            const codes = await detector.detect(video);
+            const value = codes?.[0]?.rawValue;
+            if (value) handleScannedValue(value);
           }
+          await new Promise(resolve => setTimeout(resolve, 120));
         }
+        return;
+      } catch (_) {
+        scanning = false;
       }
-      await new Promise(resolve => setTimeout(resolve, 120));
     }
+
+    await scanQrWithJsQR(video);
   } catch (error) {
     stopCamera();
     $('securityMessage').textContent = `Camera/unlock error: ${error.message || 'permission denied'}.`;
