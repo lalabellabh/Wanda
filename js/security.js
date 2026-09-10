@@ -8,16 +8,38 @@ const $ = (id) => document.getElementById(id);
 let stream = null;
 let scanning = false;
 
-function speakGreeting() {
+function pickFemaleVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const femaleHints = /female|samantha|zira|aria|jenny|ava|sara|susan|karen|moira|tessa|victoria|allison|hazel|libby|sonia|google us english/i;
+  return voices.find(v => /^en(-|_)(US|GB|AU|CA|IE|IN)/i.test(v.lang) && femaleHints.test(v.name))
+    || voices.find(v => femaleHints.test(v.name) && /^en/i.test(v.lang))
+    || voices.find(v => /^en-US/i.test(v.lang) && !/male|david|mark|guy|daniel|alex/i.test(v.name))
+    || voices.find(v => /^en/i.test(v.lang))
+    || voices[0];
+}
+
+function wandaSpeak(text, options = {}) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = options.lang || 'en-US';
+  utterance.rate = options.rate ?? 0.96;
+  utterance.pitch = options.pitch ?? 1.08;
+  utterance.volume = options.volume ?? 0.9;
+  const voice = pickFemaleVoice();
+  if (voice) utterance.voice = voice;
+  window.speechSynthesis.speak(utterance);
+}
+
+window.WandaVoice = wandaSpeak;
+if ('speechSynthesis' in window) window.speechSynthesis.addEventListener('voiceschanged', () => pickFemaleVoice(), { once: true });
+
+function speakGreeting() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-  const utterance = new SpeechSynthesisUtterance(`${greeting}, dear. Welcome back. Wanda is ready.`);
-  utterance.rate = 0.95;
-  utterance.pitch = 1.05;
-  utterance.volume = 0.9;
-  window.speechSynthesis.speak(utterance);
+  wandaSpeak(`${greeting}, dear. Welcome back. Wanda is ready.`, { rate: 0.95, pitch: 1.08, volume: 0.9 });
 }
 
 function setLocked(message = 'No active session.') {
