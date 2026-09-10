@@ -1,14 +1,35 @@
 import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 
-function readHidden(prompt) {
+function readHiddenWindows(prompt) {
+  const script = [
+    "$ErrorActionPreference = 'Stop'",
+    `$s = Read-Host '${prompt.replace(/'/g, "''")}' -AsSecureString`,
+    "$b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($s)",
+    "try { [Runtime.InteropServices.Marshal]::PtrToStringBSTR($b) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b) }"
+  ].join('; ');
+
+  const result = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
+    encoding: 'utf8',
+    windowsHide: false,
+    maxBuffer: 16 * 1024
+  });
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) throw new Error((result.stderr || 'Password input failed.').trim());
+  return (result.stdout || '').trimEnd();
+}
+
+async function readHidden(prompt) {
+  if (process.platform === 'win32') return readHiddenWindows(prompt);
+
+  const stdin = process.stdin;
+  const stdout = process.stdout;
+  if (!stdin.isTTY || !stdout.isTTY || typeof stdin.setRawMode !== 'function') {
+    throw new Error('Run this password setup from an interactive terminal.');
+  }
+
   return new Promise((resolve, reject) => {
-    const stdin = process.stdin;
-    const stdout = process.stdout;
-    if (!stdin.isTTY || !stdout.isTTY || typeof stdin.setRawMode !== 'function') {
-      reject(new Error('Run this password setup from an interactive terminal.'));
-      return;
-    }
-
     stdout.write(prompt);
     stdin.setRawMode(true);
     stdin.resume();
@@ -48,7 +69,7 @@ function readHidden(prompt) {
 }
 
 try {
-  const password = await readHidden('Enter Wanda manual password (hidden): ');
+  const password = await readHidden('Enter Wanda manual password (hidden)');
   if (password.length < 15) throw new Error('Password must be at least 15 characters.');
   if (Buffer.byteLength(password, 'utf8') > 1024) throw new Error('Password is too long.');
 
