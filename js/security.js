@@ -146,5 +146,4 @@ $('passwordForm').addEventListener('submit', async (event) => {
 });
 $('lockNow').addEventListener('click', lockWanda);
 
-// Client state is only a display convenience. The backend remains authoritative.
 checkSession();
