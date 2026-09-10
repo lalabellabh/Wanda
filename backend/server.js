@@ -43,6 +43,9 @@ function json(res, status, body, extraHeaders = {}) {
     'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
     'Access-Control-Allow-Origin': ORIGIN,
     'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Private-Network': 'true',
     ...extraHeaders
   });
   res.end(data);
@@ -168,7 +171,8 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Origin': ORIGIN,
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Private-Network': 'true'
     });
     return res.end();
   }
@@ -223,9 +227,7 @@ const server = http.createServer(async (req, res) => {
         'Set-Cookie': `wanda_session=${encodeURIComponent(sid)}; Path=/; Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}; HttpOnly; Secure; SameSite=Strict`
       };
       let deviceToken;
-      if (body.trustDevice === true) {
-        deviceToken = trustDevice();
-      }
+      if (body.trustDevice === true) deviceToken = trustDevice();
       return json(res, 200, { ok: true, expiresAt: sessions.get(sid).expiresAt, deviceToken }, headers);
     }
 
