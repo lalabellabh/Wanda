@@ -8,6 +8,7 @@
   <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(self), payment=(), usb=(), serial=()">
   <title>Wanda — Lalabella AI Operations Center</title>
   <link rel="stylesheet" href="assets/wanda.css?v=20260910-5">
+  <link rel="stylesheet" href="assets/login.css?v=20260911-1">
 </head>
 <body>
   <main class="shell">
@@ -24,12 +25,12 @@
     </header>
     <section id="unlockPanel" class="card unlock-card">
       <div class="section-heading"><div><p class="eyebrow">ACCESS CONTROL</p><h2>Secure Unlock</h2></div><span class="secure-label">SHORT-LIVED SESSION</span></div>
-      <p class="muted">Wanda stays locked until a valid authenticated session is established.</p>
+      <p class="muted">Wanda stays locked until a valid authenticated session is established. Your session is intentionally short-lived and is replaced with a fresh session after expiry.</p>
       <div class="unlock-options">
         <div class="unlock-option"><div class="option-icon">⌁</div><div><h3>QR Unlock</h3><p class="muted">Scan a one-time Wanda QR, or your owner QR before password verification.</p></div><button id="startUnlock" type="button">Start QR Camera</button><div id="qrScanner" class="scanner hidden"><video id="qrVideo" playsinline muted></video><p class="muted">Camera active — center the QR inside the frame.</p></div></div>
-        <div class="unlock-option"><div class="option-icon">⌑</div><div><h3>Manual Password</h3><p class="muted">Emergency fallback when QR unlock is unavailable.</p></div><form id="passwordForm" class="password-bar"><input id="wandaPassword" type="password" autocomplete="current-password" minlength="15" maxlength="1024" placeholder="Enter Wanda password" aria-label="Wanda manual password"><button type="submit">Unlock</button></form></div>
+        <div class="unlock-option"><div class="option-icon">⌑</div><div><h3>Manual Password</h3><p class="muted">Secure fallback when QR unlock is unavailable.</p></div><form id="passwordForm" class="password-bar"><div class="password-wrap"><input id="wandaPassword" type="password" autocomplete="current-password" minlength="15" maxlength="1024" placeholder="Enter Wanda password" aria-label="Wanda manual password"><button id="passwordToggle" class="password-toggle" type="button" aria-label="Show password" title="Show password">◉</button></div><button type="submit">Unlock</button></form><label class="remember-row"><input id="rememberDevice" type="checkbox"><span>Remember this device for <strong>secure QR re-entry</strong></span></label><div class="security-note"><span>●</span> Session secrets remain HttpOnly and expire server-side.</div></div>
       </div>
-      <p id="securityMessage" class="status" role="status">No active session.</p>
+      <p id="securityMessage" class="status login-status" role="status">No active session.</p>
     </section>
     <section id="opsPanel" class="hidden" aria-hidden="true">
       <div class="command-layout">
@@ -45,6 +46,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" integrity="sha256-vEDIoVGWI2sjFNsIVvcsoLSZgM1UE7jIUqc0n1/uCFk=" crossorigin="anonymous" defer></script>
   <script src="js/security.js?v=20260910-5" defer></script>
+  <script src="js/login-ui.js?v=20260911-1" defer></script>
   <script src="js/wanda.js?v=20260910-5" defer></script>
 </body>
 </html>
