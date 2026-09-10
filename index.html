@@ -23,11 +23,28 @@
     <section id="unlockPanel" class="card">
       <h2>Secure Unlock</h2>
       <p>Wanda stays locked until a valid short-lived session is established.</p>
-      <button id="startUnlock" type="button">Start QR Unlock</button>
-      <div id="qrScanner" class="scanner hidden">
-        <video id="qrVideo" playsinline muted></video>
-        <p class="muted">Scan the one-time Wanda QR challenge.</p>
+
+      <div class="unlock-options">
+        <div class="unlock-option">
+          <h3>📷 QR Unlock</h3>
+          <p class="muted">Use a one-time QR challenge from your trusted device.</p>
+          <button id="startUnlock" type="button">Start QR Unlock</button>
+          <div id="qrScanner" class="scanner hidden">
+            <video id="qrVideo" playsinline muted></video>
+            <p class="muted">Scan the one-time Wanda QR challenge.</p>
+          </div>
+        </div>
+
+        <div class="unlock-option">
+          <h3>🔐 Manual Password</h3>
+          <p class="muted">Emergency fallback when QR unlock is unavailable.</p>
+          <form id="passwordForm" class="password-bar">
+            <input id="wandaPassword" type="password" autocomplete="current-password" minlength="15" maxlength="1024" placeholder="Enter Wanda password" aria-label="Wanda manual password">
+            <button type="submit">Unlock</button>
+          </form>
+        </div>
       </div>
+
       <p id="securityMessage" class="status" role="status">No active session.</p>
     </section>
 
