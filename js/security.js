@@ -1,21 +1,10 @@
 'use strict';
 
-/*
- * Client security boundary.
- * IMPORTANT: this is NOT the authoritative authentication layer.
- * A browser can be modified by its owner/attacker. The backend/local agent
- * must independently validate every privileged request.
- */
-
+const API_BASE = window.WANDA_API_BASE || 'http://127.0.0.1:8787';
 const SESSION_KEY = 'wanda.session.v1';
-const MAX_SESSION_MS = 10 * 60 * 1000;
-
 const $ = (id) => document.getElementById(id);
-
-function clearSession() {
-  try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
-  setLocked();
-}
+let stream = null;
+let scanning = false;
 
 function setLocked(message = 'No active session.') {
   $('securityBadge').textContent = 'LOCKED';
@@ -33,44 +22,90 @@ function setUnlocked(session) {
   $('securityMessage').textContent = `Session active until ${new Date(session.expiresAt).toLocaleTimeString()}.`;
 }
 
-function loadLocalSession() {
+function stopCamera() {
+  scanning = false;
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  stream = null;
+  const video = $('qrVideo');
+  if (video) video.srcObject = null;
+  $('qrScanner')?.classList.add('hidden');
+}
+
+async function verifyQr(payload) {
+  const response = await fetch(`${API_BASE}/auth/qr/verify`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ payload })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.ok) throw new Error(data.error || 'unlock_failed');
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ expiresAt: data.expiresAt }));
+  stopCamera();
+  setUnlocked(data);
+}
+
+async function scanQr() {
+  if (!('BarcodeDetector' in window)) {
+    $('securityMessage').textContent = 'This browser does not provide QR scanning. Use a browser with BarcodeDetector support or add the local QR decoder in the next build.';
+    return;
+  }
+
   try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    const session = JSON.parse(raw);
-    if (!session || !session.expiresAt || Date.now() >= session.expiresAt) {
-      clearSession();
-      return null;
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    const video = $('qrVideo');
+    video.srcObject = stream;
+    await video.play();
+    $('qrScanner').classList.remove('hidden');
+    $('securityMessage').textContent = 'Point the camera at the Wanda unlock QR.';
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+    scanning = true;
+
+    while (scanning) {
+      if (video.readyState >= 2) {
+        const codes = await detector.detect(video);
+        const value = codes?.[0]?.rawValue;
+        if (value) {
+          scanning = false;
+          $('securityMessage').textContent = 'QR detected. Validating…';
+          try { await verifyQr(value); }
+          catch (error) {
+            $('securityMessage').textContent = `Unlock denied: ${error.message}.`;
+            scanning = true;
+          }
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, 120));
     }
-    return session;
-  } catch (_) {
-    clearSession();
-    return null;
+  } catch (error) {
+    stopCamera();
+    $('securityMessage').textContent = `Camera/unlock error: ${error.message || 'permission denied'}.`;
   }
 }
 
-function createDevelopmentSession() {
-  // DEVELOPMENT ONLY. Replace with server-issued, signed session after backend exists.
-  const session = {
-    id: crypto.randomUUID(),
-    expiresAt: Date.now() + MAX_SESSION_MS,
-    mode: 'development'
-  };
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  return session;
+async function checkSession() {
+  try {
+    const response = await fetch(`${API_BASE}/auth/session`, { credentials: 'include', cache: 'no-store' });
+    if (!response.ok) return setLocked();
+    const session = await response.json();
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    setUnlocked(session);
+  } catch (_) {
+    setLocked('Backend is not reachable. Wanda remains locked.');
+  }
 }
 
-$('startUnlock').addEventListener('click', () => {
-  // QR scanner will be connected here in the next phase.
-  // Never put a permanent secret/credential inside a QR code.
-  $('securityMessage').textContent = 'QR scanner is not connected yet. Backend authentication is required for production unlock.';
-});
+async function lockWanda() {
+  try {
+    await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
+  } catch (_) {}
+  sessionStorage.removeItem(SESSION_KEY);
+  stopCamera();
+  setLocked('Wanda locked.');
+}
 
-$('lockNow').addEventListener('click', clearSession);
+$('startUnlock').addEventListener('click', scanQr);
+$('lockNow').addEventListener('click', lockWanda);
 
-const existing = loadLocalSession();
-if (existing) setUnlocked(existing); else setLocked();
-
-window.addEventListener('pagehide', () => {
-  // Do not persist privileged state in localStorage/cookies from this client.
-});
+// Client state is only a display convenience. The backend remains authoritative.
+checkSession();
