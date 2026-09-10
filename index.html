@@ -13,15 +13,24 @@
   <main class="shell">
     <header>
       <div>
-        <p class="eyebrow">LALABELLA</p>
+        <p class="eyebrow">LALABELLA · AI OPERATIONS</p>
         <h1>Wanda</h1>
-        <p class="muted">AI Operations Center · Security-first mode</p>
+        <p class="muted">Secure command center · local agent ready</p>
       </div>
-      <span id="securityBadge" class="badge">LOCKED</span>
+      <div class="header-status">
+        <span class="status-label">SECURITY</span>
+        <span id="securityBadge" class="badge">LOCKED</span>
+      </div>
     </header>
 
-    <section id="unlockPanel" class="card">
-      <h2>Secure Unlock</h2>
+    <section id="unlockPanel" class="card unlock-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">AUTHENTICATION</p>
+          <h2>Secure Unlock</h2>
+        </div>
+        <span class="lock-mark">🔐</span>
+      </div>
       <p>Wanda stays locked until a valid short-lived session is established.</p>
 
       <div class="unlock-options">
@@ -49,6 +58,15 @@
     </section>
 
     <section id="opsPanel" class="card hidden" aria-hidden="true">
+      <div class="command-center-banner">
+        <div>
+          <p class="eyebrow">SECURE SESSION</p>
+          <h2>Wanda Command Center</h2>
+          <p class="muted">Ready to monitor, prepare, and assist.</p>
+        </div>
+        <div class="session-state"><span class="pulse-dot"></span> ACTIVE</div>
+      </div>
+
       <div class="wanda-heading">
         <div>
           <p class="eyebrow">WANDA ASSISTANT</p>
@@ -65,12 +83,12 @@
       </form>
 
       <div class="grid">
-        <div class="tile"><b>WhatsApp</b><span>Watcher offline</span></div>
-        <div class="tile"><b>Orders</b><span>Watcher offline</span></div>
-        <div class="tile"><b>CCTV</b><span>Not connected</span></div>
-        <div class="tile"><b>Chrome Agent</b><span>Not connected</span></div>
+        <div class="tile"><span class="tile-icon">💬</span><b>WhatsApp</b><span>Watcher offline</span></div>
+        <div class="tile"><span class="tile-icon">📦</span><b>Orders</b><span>Watcher offline</span></div>
+        <div class="tile"><span class="tile-icon">📹</span><b>CCTV</b><span>Not connected</span></div>
+        <div class="tile"><span class="tile-icon">🌐</span><b>Chrome Agent</b><span>Not connected</span></div>
       </div>
-      <button id="lockNow" class="danger" type="button">Lock Wanda</button>
+      <button id="lockNow" class="danger" type="button">🔒 Lock Wanda</button>
     </section>
   </main>
   <script src="js/security.js" defer></script>
