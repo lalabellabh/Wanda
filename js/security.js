@@ -7,6 +7,7 @@ const OWNER_QR = 'WANDA-OWNER-ID:v1|name=Benjamin Gutierrez JR';
 const $ = (id) => document.getElementById(id);
 let stream = null;
 let scanning = false;
+let healthTimer = null;
 
 function pickFemaleVoice() {
   if (!('speechSynthesis' in window)) return null;
@@ -42,6 +43,46 @@ function speakGreeting() {
   wandaSpeak(`${greeting}, dear. Welcome back. Wanda is ready.`, { rate: 0.95, pitch: 1.08, volume: 0.9 });
 }
 
+function setBackendStatus(online, detail = '') {
+  const text = $('backendText');
+  const dot = $('backendDot');
+  const light = $('backendLight');
+  const shell = $('shellStatus');
+  const count = $('systemCount');
+  if (text) text.textContent = online ? (detail || 'Security backend online') : (detail || 'Backend offline');
+  if (dot) {
+    dot.style.background = online ? '#62e9a8' : '#687080';
+    dot.style.boxShadow = online ? '0 0 9px rgba(98,233,168,.65)' : '0 0 7px rgba(104,112,128,.25)';
+  }
+  if (light) {
+    light.style.background = online ? '#61e9aa' : '#ff6e99';
+    light.style.boxShadow = online ? '0 0 14px rgba(97,233,170,.75)' : '0 0 13px rgba(255,110,153,.65)';
+  }
+  if (shell) shell.textContent = online ? '● ONLINE SHELL' : '● BACKEND OFFLINE';
+  if (count) count.textContent = online ? '1 / 5' : '0 / 5';
+}
+
+async function checkBackendHealth() {
+  const started = performance.now();
+  try {
+    const response = await fetch(`${API_BASE}/health`, { method: 'GET', cache: 'no-store', credentials: 'omit' });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok !== true) throw new Error(`HTTP ${response.status}`);
+    const latency = Math.max(1, Math.round(performance.now() - started));
+    setBackendStatus(true, `Security backend online · ${latency} ms`);
+    return true;
+  } catch (error) {
+    setBackendStatus(false, 'Backend offline — Wanda remains locked');
+    return false;
+  }
+}
+
+function startBackendWatcher() {
+  clearInterval(healthTimer);
+  checkBackendHealth();
+  healthTimer = setInterval(checkBackendHealth, 30000);
+}
+
 function setLocked(message = 'No active session.') {
   document.body.classList.remove('is-unlocked');
   $('securityBadge').textContent = 'LOCKED';
@@ -51,6 +92,10 @@ function setLocked(message = 'No active session.') {
   $('opsPanel').classList.add('hidden');
   $('opsPanel').setAttribute('aria-hidden', 'true');
   $('securityMessage').textContent = message;
+  const state = $('sessionState');
+  const detail = $('sessionDetail');
+  if (state) state.textContent = 'Locked';
+  if (detail) detail.textContent = 'Authentication required';
 }
 
 function setUnlocked(session, announce = true) {
@@ -62,6 +107,10 @@ function setUnlocked(session, announce = true) {
   $('opsPanel').classList.remove('hidden');
   $('opsPanel').setAttribute('aria-hidden', 'false');
   $('securityMessage').textContent = `Secure session active until ${new Date(session.expiresAt).toLocaleTimeString()}.`;
+  const state = $('sessionState');
+  const detail = $('sessionDetail');
+  if (state) state.textContent = 'Secure';
+  if (detail) detail.textContent = `Session active until ${new Date(session.expiresAt).toLocaleTimeString()}`;
   if (announce) speakGreeting();
 }
 
@@ -122,7 +171,6 @@ function handleScannedValue(value) {
     });
     return true;
   }
-
   if (value === OWNER_QR) {
     scanning = false;
     $('securityMessage').textContent = 'Owner QR recognized. Checking trusted device…';
@@ -138,7 +186,6 @@ function handleScannedValue(value) {
     });
     return true;
   }
-
   $('securityMessage').textContent = 'QR detected, but it is not a valid Wanda unlock code.';
   return false;
 }
@@ -244,4 +291,5 @@ $('passwordForm').addEventListener('submit', async (event) => {
   }
 });
 $('lockNow').addEventListener('click', lockWanda);
+startBackendWatcher();
 checkSession();
