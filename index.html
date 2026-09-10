@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https:; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(self), payment=(), usb=(), serial=()">
+  <title>Wanda — Lalabella AI Operations Center</title>
+  <link rel="stylesheet" href="assets/wanda.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">LALABELLA</p>
+        <h1>Wanda</h1>
+        <p class="muted">AI Operations Center · Security-first mode</p>
+      </div>
+      <span id="securityBadge" class="badge">LOCKED</span>
+    </header>
+
+    <section id="unlockPanel" class="card">
+      <h2>Secure Unlock</h2>
+      <p>Wanda stays locked until a valid short-lived session is established.</p>
+      <button id="startUnlock" type="button">Start QR Unlock</button>
+      <p id="securityMessage" class="status" role="status">No active session.</p>
+    </section>
+
+    <section id="opsPanel" class="card hidden" aria-hidden="true">
+      <h2>Operations</h2>
+      <div class="grid">
+        <div class="tile"><b>WhatsApp</b><span>Watcher offline</span></div>
+        <div class="tile"><b>Orders</b><span>Watcher offline</span></div>
+        <div class="tile"><b>CCTV</b><span>Not connected</span></div>
+        <div class="tile"><b>Chrome Agent</b><span>Not connected</span></div>
+      </div>
+      <button id="lockNow" class="danger" type="button">Lock Wanda</button>
+    </section>
+  </main>
+  <script src="js/security.js" defer></script>
+</body>
+</html>
