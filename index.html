@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https: http://127.0.0.1:8787; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https: http://127.0.0.1:8787; font-src 'self' data:; media-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
   <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(self), payment=(), usb=(), serial=()">
   <title>Wanda — Lalabella AI Operations Center</title>
   <link rel="stylesheet" href="assets/wanda.css">
@@ -34,9 +34,9 @@
       <p class="muted">Wanda stays locked until a valid authenticated session is established.</p>
       <div class="unlock-options">
         <div class="unlock-option">
-          <div class="option-icon">⌁</div><div><h3>QR Unlock</h3><p class="muted">Use a one-time QR challenge from your trusted device.</p></div>
-          <button id="startUnlock" type="button">Start QR Unlock</button>
-          <div id="qrScanner" class="scanner hidden"><video id="qrVideo" playsinline muted></video><p class="muted">Scan the one-time Wanda QR challenge.</p></div>
+          <div class="option-icon">⌁</div><div><h3>QR Unlock</h3><p class="muted">Scan a one-time Wanda QR, or your owner QR before password verification.</p></div>
+          <button id="startUnlock" type="button">Start QR Camera</button>
+          <div id="qrScanner" class="scanner hidden"><video id="qrVideo" playsinline muted></video><p class="muted">Camera active — center the QR inside the frame.</p></div>
         </div>
         <div class="unlock-option">
           <div class="option-icon">⌑</div><div><h3>Manual Password</h3><p class="muted">Emergency fallback when QR unlock is unavailable.</p></div>
@@ -117,6 +117,7 @@
       </div>
     </section>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" integrity="sha256-rsgbRZ1OOFaIX8oEtJdHQic5areT2u30Av2A97n8wzc=" crossorigin="anonymous" defer></script>
   <script src="js/security.js" defer></script>
   <script src="js/wanda.js" defer></script>
 </body>
