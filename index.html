@@ -10,9 +10,7 @@
   <link rel="stylesheet" href="assets/wanda.css?v=20260911-3">
   <link rel="stylesheet" href="assets/wanda-3d.css?v=20260911-1">
   <link rel="stylesheet" href="assets/wanda-vision.css?v=20260911-2">
-  <link rel="stylesheet" href="assets/wanda-reference.css?v=20260911-1">
-  <link rel="stylesheet" href="assets/wanda-reference-v2.css?v=20260911-1">
-  <link rel="stylesheet" href="assets/wanda-reference-v3.css?v=20260911-1">
+  <link rel="stylesheet" href="assets/wanda-core-v4.css?v=20260911-1">
   <link rel="stylesheet" href="assets/login.css?v=20260911-1">
 </head>
 <body>
@@ -20,16 +18,9 @@
     <header class="topbar">
       <div class="brand-block">
         <div class="brand-mark" aria-hidden="true">✿</div>
-        <div>
-          <p class="eyebrow">LALABELLA · AI OPERATIONS</p>
-          <h1>LALABELLA</h1>
-          <p class="muted">FLOWERS · PEOPLE · MOMENTS</p>
-        </div>
+        <div><p class="eyebrow">LALABELLA · AI OPERATIONS</p><h1>LALABELLA</h1><p class="muted">FLOWERS · PEOPLE · MOMENTS</p></div>
       </div>
-      <div class="top-title">
-        <p class="eyebrow">WANDA COMMAND CENTER</p>
-        <span>MONITOR · ASSIST · SIMPLIFY</span>
-      </div>
+      <div class="top-title"><p class="eyebrow">WANDA COMMAND CENTER</p><span>MONITOR · ASSIST · SIMPLIFY</span></div>
       <div class="security-state"><span id="backendLight" class="status-light" aria-hidden="true"></span><span id="securityBadge" class="badge">LOCKED</span></div>
     </header>
 
@@ -47,105 +38,28 @@
       <div class="command-layout">
         <aside class="sidebar card" aria-hidden="true">
           <div class="sidebar-brand"><div class="mini-mark">✿</div><div><b>LALABELLA</b><span>WANDA CENTER</span></div></div>
-          <nav class="main-nav" aria-label="Wanda sections">
-            <button class="nav-item active" type="button"><span>⌂</span> Home</button>
-            <button class="nav-item" type="button"><span>◌</span> Dashboard</button>
-            <button class="nav-item" type="button"><span>▦</span> Inventory</button>
-            <button class="nav-item" type="button"><span>▣</span> Orders</button>
-            <button class="nav-item" type="button"><span>✿</span> Flower Tools</button>
-            <button class="nav-item" type="button"><span>▤</span> Chocolate Calc</button>
-            <button class="nav-item" type="button"><span>▧</span> Invoices</button>
-            <button class="nav-item" type="button"><span>◈</span> Reports</button>
-          </nav>
+          <nav class="main-nav" aria-label="Wanda sections"><button class="nav-item active" type="button"><span>⌂</span> Home</button><button class="nav-item" type="button"><span>◌</span> Dashboard</button><button class="nav-item" type="button"><span>▦</span> Inventory</button><button class="nav-item" type="button"><span>▣</span> Orders</button><button class="nav-item" type="button"><span>✿</span> Flower Tools</button><button class="nav-item" type="button"><span>▤</span> Chocolate Calc</button><button class="nav-item" type="button"><span>▧</span> Invoices</button><button class="nav-item" type="button"><span>◈</span> Reports</button></nav>
           <div class="sidebar-bottom"><div class="secure-mini"><span class="pulse-dot"></span><div><b id="sessionState">Secure</b><small id="sessionDetail">Session active</small></div></div><button id="lockNow" class="danger sidebar-lock" type="button">Lock Wanda</button></div>
         </aside>
-
         <div class="workspace">
-          <div class="workspace-top">
-            <div class="search-command"><span>✦</span><span>Ask Wanda anything...</span><kbd>Ctrl K</kbd></div>
-            <div class="top-actions"><button type="button" class="icon-button" aria-label="Notifications">♢</button><span class="avatar">B</span></div>
-          </div>
-
+          <div class="workspace-top"><div class="search-command"><span>✦</span><span>Ask Wanda anything...</span><kbd>Ctrl K</kbd></div><div class="top-actions"><button type="button" class="icon-button" aria-label="Notifications">♢</button><span class="avatar">B</span></div></div>
           <section class="hero-status card" id="wandaCoreStage">
-            <div class="hero-copy">
-              <p class="eyebrow">WANDA AI ASSISTANT</p>
-              <h2>Good evening, Boss! ✿</h2>
-              <p class="muted">I'm listening. I can watch your systems, check orders, and prepare actions for you.</p>
-            </div>
-            <div class="core-wrap">
-              <div class="core-orbit orbit-one"></div>
-              <div class="core-orbit orbit-two"></div>
-              <div class="hero-orb" id="wandaCore" aria-label="Wanda AI core">
-                <div class="orb-face" id="wandaFace">
-                  <span class="orb-eye left"></span>
-                  <span class="orb-eye right"></span>
-                  <span class="orb-smile">⌣</span>
-                </div>
-                <i class="petal p1"></i><i class="petal p2"></i><i class="petal p3"></i><i class="petal p4"></i>
-              </div>
-              <div class="core-name">WANDA</div>
-              <div class="core-subtitle">Your AI Assistant</div>
-              <div id="livePill" class="live-pill"><span></span> CORE ONLINE</div>
-              <div class="core-tagline">“Small details, brighter days.”</div>
-            </div>
+            <div class="hero-copy"><p class="eyebrow">WANDA AI ASSISTANT</p><h2>Good evening, Boss! ✿</h2><p class="muted">I'm listening. I can watch your systems, check orders, and prepare actions for you.</p></div>
+            <div class="core-wrap"><div class="core-orbit orbit-one"></div><div class="core-orbit orbit-two"></div><div class="hero-orb" id="wandaCore" aria-label="Wanda AI core"><div class="orb-face" id="wandaFace"><span class="orb-eye left"></span><span class="orb-eye right"></span><span class="orb-smile">⌣</span></div><i class="petal p1"></i><i class="petal p2"></i><i class="petal p3"></i><i class="petal p4"></i></div><div class="core-name">WANDA</div><div class="core-subtitle">Your AI Assistant</div><div id="livePill" class="live-pill"><span></span> CORE ONLINE</div><div class="core-tagline">“Small details, brighter days.”</div></div>
             <div class="core-side-note"><span class="core-pulse"></span><b>Always watching</b><small>External actions require confirmation.</small></div>
           </section>
-
           <div class="dashboard-grid">
-            <section class="card systems-card" id="systemsPanel">
-              <div class="section-heading compact"><div><p class="eyebrow">LIVE SYSTEMS</p><h3>Active connections</h3></div><span id="systemCount" class="system-count">1 / 5</span></div>
-              <div class="system-list">
-                <div id="backendSystem" class="system-row"><div class="system-icon">S</div><div><b>Wanda Security</b><span id="backendText">Checking backend…</span></div><i id="backendDot" class="connection-dot"></i></div>
-                <div class="system-row"><div class="system-icon whatsapp">W</div><div><b>WhatsApp</b><span>Watcher offline</span></div><i class="connection-dot"></i></div>
-                <div class="system-row"><div class="system-icon orders">O</div><div><b>Orders</b><span>Watcher offline</span></div><i class="connection-dot"></i></div>
-                <div class="system-row"><div class="system-icon cctv">C</div><div><b>CCTV</b><span>Not connected</span></div><i class="connection-dot"></i></div>
-                <div class="system-row"><div class="system-icon chrome">⌘</div><div><b>Chrome Agent</b><span>Not connected</span></div><i class="connection-dot"></i></div>
-              </div>
-            </section>
-
-            <section class="card quick-card">
-              <div class="section-heading compact"><div><p class="eyebrow">QUICK ACTIONS</p><h3>Wanda tools</h3></div><span class="tiny muted">READY</span></div>
-              <div class="quick-grid">
-                <button type="button" class="quick-action scan-action"><span>⌕</span><b>Scan Orders</b><small>Check live queue</small></button>
-                <button type="button" class="quick-action whatsapp-action"><span>◉</span><b>Open WhatsApp</b><small>Open local watcher</small></button>
-                <button type="button" class="quick-action"><span>▥</span><b>Reports</b><small>Prepare a report</small></button>
-                <button type="button" class="quick-action"><span>▣</span><b>Inventory</b><small>Check stock tools</small></button>
-                <button type="button" class="quick-action"><span>▤</span><b>Chocolate Calc</b><small>Open calculator</small></button>
-                <button type="button" class="quick-action"><span>▥</span><b>Print Helper</b><small>Open print tools</small></button>
-              </div>
-            </section>
-
-            <section class="card summary-card">
-              <div class="section-heading compact"><div><p class="eyebrow">TODAY'S SUMMARY</p><h3>Operations at a glance</h3></div><span class="tiny muted">LIVE</span></div>
-              <div class="summary-grid">
-                <div class="summary-item orders-summary"><span>▣</span><b id="summaryOrders">0</b><small>New Orders</small></div>
-                <div class="summary-item assigned-summary"><span>✓</span><b id="summaryAssigned">0</b><small>Assigned</small></div>
-                <div class="summary-item invoice-summary"><span>▤</span><b id="summaryInvoices">0</b><small>Invoices</small></div>
-                <div class="summary-item alert-summary"><span>♢</span><b id="summaryAlerts">0</b><small>Alerts</small></div>
-              </div>
-            </section>
-
-            <section class="card assistant-card">
-              <div class="wanda-heading"><div><p class="eyebrow">CHAT WITH WANDA</p><h2>What can I do for you, Boss?</h2></div><span id="shellStatus" class="online-dot">● ONLINE SHELL</span></div>
-              <div id="wandaMessages" class="messages" aria-live="polite"><div class="welcome-state"><div class="welcome-orb">✿</div><strong>Wanda is standing by</strong><span>Use voice or type a command below.</span></div></div>
-              <form id="wandaCommandForm" class="command-bar"><input id="wandaCommand" autocomplete="off" maxlength="500" placeholder="Tell Wanda what to check or prepare…" aria-label="Command Wanda"><button id="voiceButton" class="voice-button" type="button">◉ Voice</button><button class="send-button" type="submit">Send ↗</button></form>
-              <div class="quick-commands"><span>Quick commands</span><button type="button">Check inventory</button><button type="button">Show today's orders</button><button type="button">Open flower tools</button></div>
-            </section>
-
-            <section class="card activity-card">
-              <div class="section-heading compact"><div><p class="eyebrow">RECENT ACTIVITY</p><h3>Live events</h3></div><span class="tiny muted">SECURE LOG</span></div>
-              <div class="activity-feed" id="activityFeed">
-                <div class="activity-empty"><span class="activity-ring">•</span><strong id="activityTitle">No events yet</strong><small id="activityDetail">Wanda will show activity here.</small></div>
-              </div>
-            </section>
+            <section class="card systems-card" id="systemsPanel"><div class="section-heading compact"><div><p class="eyebrow">LIVE SYSTEMS</p><h3>Active connections</h3></div><span id="systemCount" class="system-count">1 / 5</span></div><div class="system-list"><div id="backendSystem" class="system-row"><div class="system-icon">S</div><div><b>Wanda Security</b><span id="backendText">Checking backend…</span></div><i id="backendDot" class="connection-dot"></i></div><div class="system-row"><div class="system-icon whatsapp">W</div><div><b>WhatsApp</b><span>Watcher offline</span></div><i class="connection-dot"></i></div><div class="system-row"><div class="system-icon orders">O</div><div><b>Orders</b><span>Watcher offline</span></div><i class="connection-dot"></i></div><div class="system-row"><div class="system-icon cctv">C</div><div><b>CCTV</b><span>Not connected</span></div><i class="connection-dot"></i></div><div class="system-row"><div class="system-icon chrome">⌘</div><div><b>Chrome Agent</b><span>Not connected</span></div><i class="connection-dot"></i></div></div></section>
+            <section class="card quick-card"><div class="section-heading compact"><div><p class="eyebrow">QUICK ACTIONS</p><h3>Wanda tools</h3></div><span class="tiny muted">READY</span></div><div class="quick-grid"><button type="button" class="quick-action scan-action"><span>⌕</span><b>Scan Orders</b><small>Check live queue</small></button><button type="button" class="quick-action whatsapp-action"><span>◉</span><b>Open WhatsApp</b><small>Open local watcher</small></button><button type="button" class="quick-action"><span>▥</span><b>Reports</b><small>Prepare a report</small></button><button type="button" class="quick-action"><span>▣</span><b>Inventory</b><small>Check stock tools</small></button><button type="button" class="quick-action"><span>▤</span><b>Chocolate Calc</b><small>Open calculator</small></button><button type="button" class="quick-action"><span>▥</span><b>Print Helper</b><small>Open print tools</small></button></div></section>
+            <section class="card summary-card"><div class="section-heading compact"><div><p class="eyebrow">TODAY'S SUMMARY</p><h3>Operations at a glance</h3></div><span class="tiny muted">LIVE</span></div><div class="summary-grid"><div class="summary-item orders-summary"><span>▣</span><b id="summaryOrders">0</b><small>New Orders</small></div><div class="summary-item assigned-summary"><span>✓</span><b id="summaryAssigned">0</b><small>Assigned</small></div><div class="summary-item invoice-summary"><span>▤</span><b id="summaryInvoices">0</b><small>Invoices</small></div><div class="summary-item alert-summary"><span>♢</span><b id="summaryAlerts">0</b><small>Alerts</small></div></div></section>
+            <section class="card assistant-card"><div class="wanda-heading"><div><p class="eyebrow">CHAT WITH WANDA</p><h2>What can I do for you, Boss?</h2></div><span id="shellStatus" class="online-dot">● ONLINE SHELL</span></div><div id="wandaMessages" class="messages" aria-live="polite"><div class="welcome-state"><div class="welcome-orb">✿</div><strong>Wanda is standing by</strong><span>Use voice or type a command below.</span></div></div><form id="wandaCommandForm" class="command-bar"><input id="wandaCommand" autocomplete="off" maxlength="500" placeholder="Tell Wanda what to check or prepare…" aria-label="Command Wanda"><button id="voiceButton" class="voice-button" type="button">◉ Voice</button><button class="send-button" type="submit">Send ↗</button></form><div class="quick-commands"><span>Quick commands</span><button type="button">Check inventory</button><button type="button">Show today's orders</button><button type="button">Open flower tools</button></div></section>
+            <section class="card activity-card"><div class="section-heading compact"><div><p class="eyebrow">RECENT ACTIVITY</p><h3>Live events</h3></div><span class="tiny muted">SECURE LOG</span></div><div class="activity-feed" id="activityFeed"><div class="activity-empty"><span class="activity-ring">•</span><strong id="activityTitle">No events yet</strong><small id="activityDetail">Wanda will show activity here.</small></div></div></section>
           </div>
-
           <div class="footer-strip"><span>✿ Wanda · Lalabella AI Operations</span><span>All external actions require confirmation.</span></div>
         </div>
       </div>
     </section>
   </main>
-
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" integrity="sha256-vEDIoVGWI2sjFNsIVvcsoLSZgM1UE7jIUqc0n1/uCFk=" crossorigin="anonymous" defer></script>
   <script src="js/security.js?v=20260910-5" defer></script>
   <script src="js/login-ui.js?v=20260911-1" defer></script>
