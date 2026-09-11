@@ -3,7 +3,7 @@
 /* Wanda's local assistant shell. No external AI key is stored in the browser. */
 const getEl = (id) => document.getElementById(id);
 const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
-const API_BASE = window.WANDA_API_BASE || 'http://127.0.0.1:8787';
+const WANDA_API_BASE = window.WANDA_API_BASE || 'http://127.0.0.1:8787';
 let recognition = null;
 let backendTimer = null;
 
@@ -57,7 +57,7 @@ function setBackendUI(online, detail) {
 async function checkBackendStatus() {
   try {
     const started = performance.now();
-    const response = await fetch(`${API_BASE}/health`, { cache: 'no-store' });
+    const response = await fetch(`${WANDA_API_BASE}/health`, { cache: 'no-store' });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || data.ok === false) throw new Error(`HTTP ${response.status}`);
     const latency = Math.max(1, Math.round(performance.now() - started));
