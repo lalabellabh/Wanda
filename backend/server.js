@@ -11,6 +11,7 @@ const SESSION_TTL_MS = 10 * 60_000;
 const TRUST_TTL_MS = 30 * 24 * 60 * 60_000;
 const MAX_QR_ATTEMPTS = 5;
 const MAX_PASSWORD_ATTEMPTS = 5;
+const MAX_ORDER_HISTORY = 50;
 
 if (!DEVICE_SECRET || Buffer.byteLength(DEVICE_SECRET) < 32) {
   console.error('WANDA_DEVICE_SECRET must be set and contain at least 32 bytes.');
@@ -22,6 +23,15 @@ const sessions = new Map();
 const trustedDevices = new Map();
 const qrAttempts = new Map();
 const passwordAttempts = new Map();
+
+const orderState = {
+  agentOnline: false,
+  currentOrder: null,
+  history: [],
+  updatedAt: null
+};
+
+const orderClients = new Set();
 
 const now = () => Date.now();
 const randomToken = (bytes = 32) => crypto.randomBytes(bytes).toString('base64url');
@@ -77,7 +87,11 @@ function readJson(req) {
       if (body.length > 16_384) req.destroy();
     });
     req.on('end', () => {
-      try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error('invalid_json')); }
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch {
+        reject(new Error('invalid_json'));
+      }
     });
     req.on('error', reject);
   });
@@ -145,7 +159,10 @@ async function verifyPassword(password) {
 
 function passwordLimiter(ip) {
   const a = passwordAttempts.get(ip) || { count: 0, resetAt: now() + 60_000 };
-  if (a.resetAt <= now()) { a.count = 0; a.resetAt = now() + 60_000; }
+  if (a.resetAt <= now()) {
+    a.count = 0;
+    a.resetAt = now() + 60_000;
+  }
   a.count += 1;
   passwordAttempts.set(ip, a);
   return a.count <= MAX_PASSWORD_ATTEMPTS;
@@ -160,12 +177,76 @@ function trustedDevice(token) {
 
 function trustDevice() {
   const token = randomToken(32);
-  trustedDevices.set(hashToken(token), { createdAt: now(), expiresAt: now() + TRUST_TTL_MS });
+  trustedDevices.set(hashToken(token), {
+    createdAt: now(),
+    expiresAt: now() + TRUST_TTL_MS
+  });
   return token;
+}
+
+function broadcastOrder(event) {
+  const data = `data: ${JSON.stringify(event)}\n\n`;
+  for (const res of orderClients) {
+    try {
+      res.write(data);
+    } catch {
+      orderClients.delete(res);
+    }
+  }
+}
+
+function normalizeOrder(body) {
+  const order = body?.order && typeof body.order === 'object'
+    ? body.order
+    : body;
+
+  const orderId = String(order?.orderId || '').trim();
+  if (!orderId || orderId.length > 100) return null;
+
+  const address = String(order?.address || '').trim().slice(0, 2000);
+  const decision = order?.decision && typeof order.decision === 'object'
+    ? {
+        branch: order.decision.branch ? String(order.decision.branch).slice(0, 100) : null,
+        method: order.decision.method ? String(order.decision.method).slice(0, 50) : null,
+        confidence: order.decision.confidence ? String(order.decision.confidence).slice(0, 50) : null,
+        distanceKm: Number.isFinite(Number(order.decision.distanceKm)) ? Number(order.decision.distanceKm) : null
+      }
+    : null;
+
+  return {
+    orderId,
+    address,
+    decision,
+    timestamp: new Date().toISOString()
+  };
+}
+
+function acceptOrderEvent(body) {
+  if (body?.agent === 'wanda-order-agent') {
+    orderState.agentOnline = true;
+  }
+
+  const order = normalizeOrder(body);
+  if (!order) return null;
+
+  orderState.currentOrder = order;
+  orderState.updatedAt = order.timestamp;
+  orderState.history = [
+    order,
+    ...orderState.history.filter(item => item.orderId !== order.orderId)
+  ].slice(0, MAX_ORDER_HISTORY);
+
+  broadcastOrder({
+    type: 'order',
+    order
+  });
+
+  return order;
 }
 
 const server = http.createServer(async (req, res) => {
   cleanExpired();
+
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': ORIGIN,
@@ -180,13 +261,25 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${HOST}:${PORT}`);
 
-    if (url.pathname === '/health' && req.method === 'GET') return json(res, 200, { ok: true, service: 'wanda-backend' });
-    if (url.pathname === '/auth/challenge' && req.method === 'POST') return json(res, 200, { ok: true, ...issueChallenge() });
+    if (url.pathname === '/health' && req.method === 'GET') {
+      return json(res, 200, {
+        ok: true,
+        service: 'wanda-backend',
+        ordersAgentOnline: orderState.agentOnline
+      });
+    }
+
+    if (url.pathname === '/auth/challenge' && req.method === 'POST') {
+      return json(res, 200, { ok: true, ...issueChallenge() });
+    }
 
     if (url.pathname === '/auth/qr/verify' && req.method === 'POST') {
       const ip = req.socket.remoteAddress || 'unknown';
       const a = qrAttempts.get(ip) || { count: 0, resetAt: now() + 60_000 };
-      if (a.resetAt <= now()) { a.count = 0; a.resetAt = now() + 60_000; }
+      if (a.resetAt <= now()) {
+        a.count = 0;
+        a.resetAt = now() + 60_000;
+      }
       if (a.count >= MAX_QR_ATTEMPTS) return json(res, 429, { ok: false, error: 'rate_limited' });
       a.count += 1;
       qrAttempts.set(ip, a);
@@ -216,7 +309,9 @@ const server = http.createServer(async (req, res) => {
       const body = await readJson(req);
       if (typeof body.password !== 'string' || body.password.length < 15 || Buffer.byteLength(body.password, 'utf8') > 1024) return json(res, 401, { ok: false, error: 'invalid_credentials' });
       let valid = false;
-      try { valid = await verifyPassword(body.password); } catch (error) {
+      try {
+        valid = await verifyPassword(body.password);
+      } catch (error) {
         console.warn('password_auth_error', error.message);
         return json(res, 503, { ok: false, error: 'password_auth_unavailable' });
       }
@@ -240,7 +335,105 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === '/auth/logout' && req.method === 'POST') {
       const sid = parseCookies(req).wanda_session;
       if (sid) sessions.delete(sid);
-      return json(res, 200, { ok: true }, { 'Set-Cookie': 'wanda_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict' });
+      return json(res, 200, { ok: true }, {
+        'Set-Cookie': 'wanda_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict'
+      });
+    }
+
+    /* =======================================================
+       ORDERS BRIDGE
+       Local-only backend receives observations from the browser
+       Order Agent and streams them to the Command Center.
+    ======================================================= */
+
+    if (url.pathname === '/orders/state' && req.method === 'GET') {
+      return json(res, 200, {
+        ok: true,
+        agentOnline: orderState.agentOnline,
+        currentOrder: orderState.currentOrder,
+        history: orderState.history,
+        updatedAt: orderState.updatedAt
+      });
+    }
+
+    if (url.pathname === '/orders/event' && req.method === 'POST') {
+      const body = await readJson(req);
+      const order = acceptOrderEvent(body);
+
+      if (!order) {
+        return json(res, 400, {
+          ok: false,
+          error: 'invalid_order'
+        });
+      }
+
+      return json(res, 200, {
+        ok: true,
+        received: true,
+        order
+      });
+    }
+
+    if (url.pathname === '/orders/agent' && req.method === 'POST') {
+      const body = await readJson(req);
+      orderState.agentOnline = body?.online !== false;
+      orderState.updatedAt = new Date().toISOString();
+
+      broadcastOrder({
+        type: 'agent_status',
+        online: orderState.agentOnline,
+        updatedAt: orderState.updatedAt
+      });
+
+      return json(res, 200, {
+        ok: true,
+        online: orderState.agentOnline
+      });
+    }
+
+    if (url.pathname === '/orders/events' && req.method === 'GET') {
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Connection: 'keep-alive',
+        'X-Accel-Buffering': 'no',
+        'Access-Control-Allow-Origin': ORIGIN,
+        'Access-Control-Allow-Credentials': 'true'
+      });
+
+      res.write(`data: ${JSON.stringify({
+        type: 'agent_status',
+        online: orderState.agentOnline,
+        updatedAt: orderState.updatedAt
+      })}\n\n`);
+
+      if (orderState.currentOrder) {
+        res.write(`data: ${JSON.stringify({
+          type: 'order',
+          order: orderState.currentOrder
+        })}\n\n`);
+      }
+
+      orderClients.add(res);
+
+      req.on('close', () => {
+        orderClients.delete(res);
+      });
+
+      return;
+    }
+
+    if (url.pathname === '/orders/clear' && req.method === 'POST') {
+      orderState.currentOrder = null;
+      orderState.history = [];
+      orderState.updatedAt = new Date().toISOString();
+
+      broadcastOrder({
+        type: 'orders_cleared',
+        updatedAt: orderState.updatedAt
+      });
+
+      return json(res, 200, { ok: true });
     }
 
     if (url.pathname === '/ops/prepare' && req.method === 'POST') {
@@ -249,11 +442,21 @@ const server = http.createServer(async (req, res) => {
       return json(res, 501, { ok: false, error: 'prepare_not_implemented' });
     }
 
-    return json(res, 404, { ok: false, error: 'not_found' });
+    return json(res, 404, {
+      ok: false,
+      error: 'not_found'
+    });
   } catch (error) {
     console.warn('request_denied', error.message);
-    return json(res, 400, { ok: false, error: 'request_denied' });
+    return json(res, 400, {
+      ok: false,
+      error: 'request_denied'
+    });
   }
 });
 
-server.listen(PORT, HOST, () => console.log(`Wanda backend listening on http://${HOST}:${PORT}`));
+server.listen(PORT, HOST, () => {
+  console.log(
+    `Wanda backend listening on http://${HOST}:${PORT}`
+  );
+});
