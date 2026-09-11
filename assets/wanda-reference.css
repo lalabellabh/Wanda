@@ -1,59 +1,138 @@
-/* Wanda Command Center — approved reference composition. Visual override only. */
-#opsPanel{--pink:#ff49c8;--pink2:#ff9be8;--violet:#a86cff;--green:#20efae;position:fixed;inset:0;width:100vw;height:100vh;padding:0;overflow:hidden!important;background:radial-gradient(circle at 50% 44%,rgba(255,38,194,.13),transparent 26%),radial-gradient(circle at 12% 82%,rgba(105,43,255,.12),transparent 30%),linear-gradient(145deg,#05020a,#12041a 48%,#08020d)}
-#opsPanel::before,#opsPanel::after{content:"";position:absolute;inset:-25%;pointer-events:none;z-index:0}
-#opsPanel::before{background:radial-gradient(circle at 50% 48%,transparent 0 17%,rgba(255,55,203,.06) 17.1% 17.25%,transparent 17.4% 27%,rgba(255,55,203,.05) 27.1% 27.2%,transparent 27.4% 39%,rgba(255,55,203,.04) 39.1% 39.2%,transparent 39.4%);animation:refAmbient 30s linear infinite}
-#opsPanel::after{background:radial-gradient(circle at 50% 52%,transparent 0 32%,rgba(255,57,204,.035) 33%,transparent 45%);filter:blur(24px)}
+/* Wanda Command Center — polished desktop composition. Visual override only. */
+#opsPanel{
+  --pink:#ff55d1;
+  --pink-soft:#ff9be9;
+  --violet:#a96cff;
+  --cyan:#70d8ff;
+  --green:#20efae;
+  position:fixed;inset:0;width:100vw;height:100vh;padding:0;overflow:hidden!important;
+  color:#f8eefa;
+  background:
+    radial-gradient(circle at 50% 40%,rgba(255,45,198,.11),transparent 25%),
+    radial-gradient(circle at 84% 26%,rgba(120,67,255,.08),transparent 24%),
+    radial-gradient(circle at 12% 78%,rgba(112,54,255,.08),transparent 28%),
+    linear-gradient(145deg,#040207 0%,#0b0311 46%,#050209 100%);
+}
+#opsPanel::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.55),transparent 82%)}
+#opsPanel::after{content:"";position:absolute;inset:-30%;pointer-events:none;z-index:0;background:radial-gradient(circle at 50% 47%,transparent 0 19%,rgba(255,65,205,.055) 19.1% 19.25%,transparent 19.5% 29%,rgba(255,65,205,.045) 29.1% 29.22%,transparent 29.5% 40%,rgba(168,108,255,.035) 40.1% 40.2%,transparent 40.5%);animation:wRefAmbient 36s linear infinite}
 #opsPanel .command-layout{position:relative;z-index:1;width:100%;height:100%;display:block}
 #opsPanel .sidebar,#opsPanel .workspace-top{display:none!important}
 #opsPanel .workspace{position:relative;width:100%;height:100%;min-width:0;overflow:hidden;display:block}
-#opsPanel .workspace::before{content:"";position:absolute;z-index:2;left:0;right:0;top:0;height:58px;border-bottom:1px solid rgba(255,72,201,.28);background:linear-gradient(180deg,rgba(10,2,15,.78),rgba(10,2,15,.18));pointer-events:none}
+
+/* Header */
+#opsPanel .workspace::before{content:"";position:absolute;z-index:20;left:0;right:0;top:0;height:57px;border-bottom:1px solid rgba(255,78,207,.30);background:linear-gradient(180deg,rgba(5,2,9,.94),rgba(7,2,11,.64));box-shadow:0 8px 28px rgba(0,0,0,.25);pointer-events:none}
+#opsPanel .topbar{z-index:30}
+.topbar .brand-block h1{font-size:25px!important;letter-spacing:.035em!important;line-height:.9!important}
+.topbar .brand-block .eyebrow{font-size:6px!important;letter-spacing:.18em!important}
+.topbar .brand-block .muted{font-size:5px!important;letter-spacing:.12em!important}
+.topbar .brand-mark{width:42px!important;height:42px!important;border-radius:13px!important;box-shadow:0 0 24px rgba(255,72,205,.34)!important}
+.topbar .top-title .eyebrow{font-size:12px!important;letter-spacing:.28em!important}
+.topbar .top-title span{font-size:6px!important;letter-spacing:.28em!important}
 
 /* Center stage */
-#opsPanel .hero-status{position:absolute;z-index:3;left:30.5%;top:62px;width:39%;height:55%;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:transparent;box-shadow:none}
+#opsPanel .hero-status{position:absolute;z-index:3;left:31%;top:58px;width:38%;height:555px;margin:0;padding:0;overflow:visible;border:0;border-radius:0;background:transparent;box-shadow:none}
 #opsPanel .hero-copy,#opsPanel .core-side-note{display:none!important}
-#opsPanel .hero-status::before{content:"";position:absolute;inset:2% 4%;border-radius:50%;background:radial-gradient(circle,transparent 0 29%,rgba(255,73,200,.10) 29.2% 29.35%,transparent 29.6% 42%,rgba(255,73,200,.07) 42.1% 42.25%,transparent 42.5% 55%,rgba(168,108,255,.055) 55.1% 55.25%,transparent 55.5%);animation:refOrbit 22s linear infinite}
-#opsPanel .hero-status::after{content:"";position:absolute;left:50%;top:50%;width:310px;height:310px;transform:translate(-50%,-50%);border:1px solid rgba(255,73,200,.12);border-radius:50%;box-shadow:0 0 90px rgba(255,43,195,.08),inset 0 0 80px rgba(168,108,255,.035)}
-#opsPanel .core-wrap{position:absolute;inset:0;height:100%;display:grid;place-items:center;align-content:center;z-index:4}
-#opsPanel .core-orbit{position:absolute;border-color:rgba(255,73,200,.27);box-shadow:0 0 25px rgba(255,73,200,.08)}
-#opsPanel .orbit-one{width:285px;height:285px;animation:refSpin 18s linear infinite}
-#opsPanel .orbit-two{width:350px;height:210px;border-color:rgba(168,108,255,.18);animation:refSpinReverse 24s linear infinite}
+#opsPanel .hero-status::before{content:"";position:absolute;left:50%;top:49%;width:470px;height:470px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,59,205,.06),transparent 56%);filter:blur(5px)}
+#opsPanel .hero-status::after{content:"";position:absolute;left:50%;top:49%;width:390px;height:390px;transform:translate(-50%,-50%);border:1px solid rgba(255,73,200,.11);border-radius:50%;box-shadow:0 0 90px rgba(255,43,195,.07),inset 0 0 90px rgba(168,108,255,.025)}
+#opsPanel .core-wrap{position:absolute;inset:0;height:100%;display:grid;place-items:center;align-content:center;z-index:4;padding-top:15px}
+#opsPanel .core-orbit{position:absolute;border:1px solid rgba(255,73,200,.23);border-radius:50%;box-shadow:0 0 24px rgba(255,73,200,.06)}
+#opsPanel .orbit-one{width:285px;height:285px;animation:wRefSpin 22s linear infinite}
+#opsPanel .orbit-two{width:350px;height:205px;border-color:rgba(168,108,255,.15);transform:rotate(-18deg);animation:wRefSpinReverse 28s linear infinite}
 
-/* Turn the existing core markup into a polished compact robot. */
-#opsPanel .hero-orb{position:relative;width:190px;height:235px;border:0;border-radius:0;background:transparent;box-shadow:none;animation:refFloat 5s ease-in-out infinite;z-index:5}
-#opsPanel .hero-orb::before{content:"";position:absolute;left:38px;bottom:34px;width:114px;height:91px;border-radius:48% 48% 42% 42%;background:linear-gradient(145deg,#fffaff,#f7d8f0 22%,#d995d5 58%,#8c4c9d);border:1px solid rgba(255,241,255,.86);box-shadow:0 10px 28px rgba(255,62,207,.18),0 0 35px rgba(255,55,204,.22),inset 0 -16px 25px rgba(92,22,100,.22);z-index:1}
-#opsPanel .hero-orb::after{content:"";position:absolute;left:33px;bottom:18px;width:124px;height:15px;border-radius:50%;border:2px solid rgba(255,67,206,.75);box-shadow:0 0 18px rgba(255,67,206,.65),0 0 48px rgba(255,67,206,.22);z-index:0}
-#opsPanel .orb-face{position:absolute;left:17px;top:5px;width:156px;height:112px;border-radius:48% 48% 43% 43%;background:linear-gradient(145deg,#fffaff,#f3d5ef 20%,#d18bd0 62%,#8b4b9d);border:1px solid rgba(255,242,255,.9);box-shadow:0 12px 35px rgba(255,63,207,.25),0 0 45px rgba(255,60,210,.18),inset 0 -20px 28px rgba(84,19,94,.18);z-index:3;transition:transform .12s ease-out}
-#opsPanel .orb-face::before{content:"";position:absolute;left:27px;top:20px;width:102px;height:69px;border-radius:48% 48% 45% 45%;background:radial-gradient(circle at 50% 45%,#1c0825,#09030f 68%,#020107);border:1px solid rgba(255,120,227,.35);box-shadow:inset 0 0 25px rgba(255,49,210,.18),0 0 18px rgba(255,59,212,.12)}
-#opsPanel .orb-eye{z-index:5;top:45px;width:17px;height:11px;border-radius:50% 50% 20% 20%;background:#fff;box-shadow:0 0 8px #ff57d2,0 0 18px rgba(255,55,211,.95)}
-#opsPanel .orb-eye.left{left:57px}#opsPanel .orb-eye.right{right:57px}#opsPanel .orb-smile{display:none!important}
-#opsPanel .petal{z-index:4;background:linear-gradient(145deg,#fff,#ffb0ed 42%,#d85ac7);box-shadow:0 0 18px rgba(255,70,211,.3)}
-#opsPanel .p1,#opsPanel .p2{width:28px;height:63px;top:128px;border-radius:60% 40% 55% 45%}.p1{left:17px;transform:rotate(28deg)}.p2{right:17px;transform:rotate(-28deg)}
-#opsPanel .p3,#opsPanel .p4{display:none!important}
-#opsPanel .core-name{position:absolute;z-index:7;bottom:5px;margin:0;font-size:22px;font-weight:900;letter-spacing:.32em;color:#ff8bdd;text-shadow:0 0 20px rgba(255,65,211,.75)}
-#opsPanel .core-subtitle{position:absolute;z-index:7;bottom:-10px;font-size:8px;color:#f8d9f3;opacity:.8}
-#opsPanel .live-pill{position:absolute;z-index:7;bottom:-32px;margin:0;font-size:7px;padding:5px 10px;border:1px solid rgba(48,239,174,.5);background:rgba(4,31,24,.75)}
-#opsPanel .core-tagline{position:absolute;z-index:7;bottom:-51px;font-size:8px;color:#f5bde9;opacity:.7}
+/* Wanda — compact premium AI silhouette, not a toy/mascot */
+#opsPanel .hero-orb{position:relative;width:166px;height:205px;border:0;border-radius:0;background:transparent;box-shadow:none;animation:wRefFloat 6s ease-in-out infinite;z-index:5}
+#opsPanel .hero-orb::before{content:"";position:absolute;left:36px;top:104px;width:94px;height:67px;border-radius:38% 38% 46% 46%;background:linear-gradient(155deg,#f9e9f7 0%,#d99ed6 40%,#8e4c9d 100%);border:1px solid rgba(255,241,255,.75);box-shadow:0 10px 28px rgba(255,62,207,.16),0 0 30px rgba(255,55,204,.16),inset 0 -15px 20px rgba(61,12,69,.22);z-index:1}
+#opsPanel .hero-orb::after{content:"";position:absolute;left:46px;top:165px;width:74px;height:6px;border-radius:50%;background:rgba(255,99,217,.55);box-shadow:0 0 16px rgba(255,67,206,.75),0 0 34px rgba(255,67,206,.22);z-index:0}
+#opsPanel .orb-face{position:absolute;left:10px;top:10px;width:146px;height:101px;border-radius:45% 45% 42% 42%;background:linear-gradient(145deg,#fffaff 0%,#f2d5ef 22%,#cf8bce 63%,#88499b 100%);border:1px solid rgba(255,245,255,.9);box-shadow:0 12px 34px rgba(255,63,207,.24),0 0 42px rgba(255,60,210,.15),inset 0 -18px 25px rgba(84,19,94,.16);z-index:3;transition:transform .12s ease-out}
+#opsPanel .orb-face::before{content:"";position:absolute;left:24px;top:19px;width:98px;height:62px;border-radius:45%;background:linear-gradient(180deg,#1a0822,#08030d);border:1px solid rgba(255,120,227,.30);box-shadow:inset 0 0 26px rgba(255,49,210,.15),0 0 20px rgba(255,59,212,.10)}
+#opsPanel .orb-face::after{content:"";position:absolute;right:17px;top:26px;width:5px;height:18px;border-radius:4px;background:#fff;box-shadow:0 0 10px #ff72d9;opacity:.95}
+#opsPanel .orb-eye{z-index:5;top:45px;width:15px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 8px #ff57d2,0 0 17px rgba(255,55,211,.9)}
+#opsPanel .orb-eye.left{left:53px}#opsPanel .orb-eye.right{right:53px}
+#opsPanel .orb-smile,#opsPanel .p3,#opsPanel .p4{display:none!important}
+#opsPanel .petal{z-index:4;background:linear-gradient(180deg,#f9eafa,#b86bb5);box-shadow:0 0 16px rgba(255,70,211,.20)}
+#opsPanel .p1,#opsPanel .p2{width:17px;height:48px;top:117px;border-radius:9px;opacity:.92}
+#opsPanel .p1{left:15px;transform:rotate(20deg)}#opsPanel .p2{right:15px;transform:rotate(-20deg)}
+#opsPanel .core-name{position:absolute;z-index:7;bottom:36px;margin:0;font-size:19px;font-weight:900;letter-spacing:.38em;color:#ff8bdd;text-shadow:0 0 20px rgba(255,65,211,.70)}
+#opsPanel .core-subtitle{position:absolute;z-index:7;bottom:17px;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:#f4d7f0;opacity:.66}
+#opsPanel .live-pill{position:absolute;z-index:7;bottom:-7px;margin:0;font-size:7px;letter-spacing:.12em;padding:5px 10px;border:1px solid rgba(48,239,174,.42);background:rgba(4,31,24,.65)}
+#opsPanel .core-tagline{position:absolute;z-index:7;bottom:-30px;font-size:8px;letter-spacing:.06em;color:#f5bde9;opacity:.58}
 
-/* Panels */
-#opsPanel .systems-card,#opsPanel .quick-card,#opsPanel .summary-card,#opsPanel .activity-card,#opsPanel .assistant-card{position:absolute;z-index:4;margin:0;border-radius:16px;background:linear-gradient(145deg,rgba(22,7,29,.87),rgba(8,3,13,.93));border-color:rgba(255,72,201,.34);box-shadow:0 20px 55px rgba(0,0,0,.34),0 0 30px rgba(255,44,198,.05),inset 0 1px 0 rgba(255,255,255,.035)}
-#opsPanel .systems-card{left:12px;top:190px;width:30.4%;height:57%;padding:14px}
-#opsPanel .quick-card{right:12px;top:56px;width:30.4%;height:33%;padding:13px}
-#opsPanel .summary-card{right:12px;top:40.5%;width:30.4%;height:21%;padding:13px}
-#opsPanel .activity-card{left:12px;bottom:30px;width:49%;height:26%;padding:12px 14px;min-height:0}
-#opsPanel .assistant-card{right:12px;bottom:30px;width:49%;height:26%;padding:12px 14px;min-height:0}
-#opsPanel .systems-card h3,#opsPanel .quick-card h3,#opsPanel .summary-card h3{font-size:13px}
-#opsPanel .eyebrow{font-size:7px;letter-spacing:.21em;color:#ff9be8;opacity:.8}
-#opsPanel .system-list{gap:7px}#opsPanel .system-row{grid-template-columns:35px 1fr 8px;min-height:57px;padding:8px 10px;border-radius:11px;border-color:rgba(255,72,201,.25);background:linear-gradient(145deg,rgba(30,10,38,.82),rgba(10,5,16,.84))}
-#opsPanel .system-icon{width:31px;height:31px;border-radius:9px;background:rgba(255,55,204,.08);border-color:rgba(255,72,201,.23);color:#ff8fe1}
-#opsPanel .system-row b{font-size:9px}#opsPanel .system-row span{font-size:7px;color:#bba7bf;opacity:.7}#opsPanel .connection-dot{width:8px;height:8px}
-#opsPanel .quick-grid{gap:7px}#opsPanel .quick-action{min-height:61px;border-radius:11px;border-color:rgba(255,72,201,.25);background:linear-gradient(145deg,rgba(36,12,45,.78),rgba(13,6,19,.86))}
-#opsPanel .quick-action span{width:28px;height:28px;color:#ff8fe1;background:rgba(255,72,201,.08)}#opsPanel .quick-action b{font-size:8px}#opsPanel .quick-action small{font-size:6px;color:#b9a6bb;opacity:.65}#opsPanel .whatsapp-action span{color:#39efb0}
-#opsPanel .summary-grid{gap:7px}#opsPanel .summary-item{min-height:58px;padding:8px;border-radius:10px;border-color:rgba(255,72,201,.22);background:linear-gradient(145deg,rgba(33,11,42,.74),rgba(12,6,17,.82))}
-#opsPanel .summary-item span{width:27px;height:27px}#opsPanel .summary-item b{font-size:14px}#opsPanel .summary-item small{font-size:6px;color:#b9a6bb}
-#opsPanel .activity-feed{height:calc(100% - 34px);overflow:hidden}#opsPanel .activity-empty{font-size:9px}#opsPanel .activity-empty small{font-size:7px}
-#opsPanel .wanda-heading h2{font-size:11px}#opsPanel .messages{height:calc(100% - 69px);margin:7px 0;padding:8px;background:rgba(5,2,9,.55);border-color:rgba(255,72,201,.20)}
-#opsPanel .command-bar input{padding:8px 10px;font-size:8px}#opsPanel .command-bar button{padding:8px 10px;font-size:7px}#opsPanel .quick-commands{display:none}
-#opsPanel .footer-strip{position:absolute;z-index:5;left:0;right:0;bottom:7px;height:14px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:6px;letter-spacing:.25em;text-transform:uppercase;color:#d99bd0;opacity:.5}
-@keyframes refFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes refOrbit{to{transform:rotate(360deg)}}@keyframes refSpin{to{transform:rotate(360deg)}}@keyframes refSpinReverse{to{transform:rotate(-360deg)}}@keyframes refAmbient{to{transform:rotate(360deg)}}
-@media(max-width:1100px){#opsPanel .hero-status{left:29%;width:42%}#opsPanel .systems-card,#opsPanel .quick-card,#opsPanel .summary-card{width:31.2%}#opsPanel .activity-card,#opsPanel .assistant-card{width:48.7%}}
-@media(max-width:760px){#opsPanel{position:relative;height:auto;min-height:100vh;overflow:auto!important}#opsPanel .workspace{height:1810px;min-height:1810px}#opsPanel .hero-status{left:0;top:55px;width:100%;height:360px}#opsPanel .systems-card{left:10px;top:425px;width:calc(100% - 20px);height:330px}#opsPanel .quick-card{left:10px;right:auto;top:765px;width:calc(100% - 20px);height:250px}#opsPanel .summary-card{left:10px;right:auto;top:1025px;width:calc(100% - 20px);height:220px}#opsPanel .activity-card,#opsPanel .assistant-card{left:10px;right:auto;width:calc(100% - 20px);height:260px}#opsPanel .activity-card{top:1260px;bottom:auto}#opsPanel .assistant-card{top:1530px;bottom:auto}#opsPanel .footer-strip{top:1810px;bottom:auto}}
+/* Shared cards */
+#opsPanel .systems-card,#opsPanel .quick-card,#opsPanel .summary-card,#opsPanel .activity-card,#opsPanel .assistant-card{position:absolute;z-index:4;margin:0;border-radius:15px;background:linear-gradient(145deg,rgba(20,7,27,.90),rgba(7,3,12,.95));border:1px solid rgba(255,72,201,.32);box-shadow:0 18px 48px rgba(0,0,0,.38),0 0 28px rgba(255,44,198,.045),inset 0 1px 0 rgba(255,255,255,.045)}
+#opsPanel .systems-card{left:12px;top:178px;width:30.0%;height:358px;padding:15px}
+#opsPanel .quick-card{right:12px;top:66px;width:30.0%;height:275px;padding:14px}
+#opsPanel .summary-card{right:12px;top:356px;width:30.0%;height:177px;padding:14px}
+#opsPanel .activity-card{left:12px;bottom:27px;width:49%;height:222px;padding:13px 15px;min-height:0}
+#opsPanel .assistant-card{right:12px;bottom:27px;width:49%;height:222px;padding:13px 15px;min-height:0}
+
+/* Typography — readable at normal desktop distance */
+#opsPanel .section-heading{margin-bottom:10px}
+#opsPanel .systems-card h3,#opsPanel .quick-card h3,#opsPanel .summary-card h3{font-size:15px;line-height:1.1;letter-spacing:-.01em}
+#opsPanel .eyebrow{font-size:8px;line-height:1;letter-spacing:.20em;color:#ff9be8;opacity:.88}
+#opsPanel .tiny{font-size:7px!important;letter-spacing:.08em}
+#opsPanel .system-count{font-size:8px}
+#opsPanel .system-list{gap:7px}
+#opsPanel .system-row{grid-template-columns:38px 1fr 9px;min-height:55px;padding:8px 10px;border-radius:11px;border-color:rgba(255,72,201,.24);background:linear-gradient(145deg,rgba(30,10,38,.82),rgba(10,5,16,.88))}
+#opsPanel .system-icon{width:32px;height:32px;border-radius:9px;background:rgba(255,55,204,.07);border-color:rgba(255,72,201,.23);color:#ff8fe1;font-size:11px}
+#opsPanel .system-row b{font-size:11px;line-height:1.15}
+#opsPanel .system-row span{font-size:8px;line-height:1.25;color:#bfaec3;opacity:.82}
+#opsPanel .connection-dot{width:8px;height:8px}
+
+/* Quick actions */
+#opsPanel .quick-grid{gap:7px}
+#opsPanel .quick-action{min-height:56px;padding:8px 10px;border-radius:11px;border-color:rgba(255,72,201,.25);background:linear-gradient(145deg,rgba(36,12,45,.80),rgba(13,6,19,.90));transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+#opsPanel .quick-action:hover{transform:translateY(-2px);border-color:rgba(255,121,222,.55);box-shadow:0 10px 25px rgba(0,0,0,.28),0 0 20px rgba(255,62,210,.08)}
+#opsPanel .quick-action span{width:29px;height:29px;color:#ff8fe1;background:rgba(255,72,201,.08);font-size:12px}
+#opsPanel .quick-action b{font-size:10px;line-height:1.15}
+#opsPanel .quick-action small{font-size:7px;line-height:1.2;color:#b9a6bb;opacity:.78}
+#opsPanel .whatsapp-action span{color:#39efb0}
+
+/* Summary */
+#opsPanel .summary-grid{gap:7px}
+#opsPanel .summary-item{min-height:57px;padding:8px 9px;border-radius:10px;border-color:rgba(255,72,201,.22);background:linear-gradient(145deg,rgba(33,11,42,.74),rgba(12,6,17,.86))}
+#opsPanel .summary-item span{width:28px;height:28px;font-size:11px}
+#opsPanel .summary-item b{font-size:17px;line-height:1}
+#opsPanel .summary-item small{font-size:7px;color:#b9a6bb;line-height:1.1}
+
+/* Activity + chat */
+#opsPanel .activity-feed{height:calc(100% - 35px);overflow:hidden}
+#opsPanel .activity-empty{font-size:11px;gap:5px}
+#opsPanel .activity-empty small{font-size:8px}
+#opsPanel .activity-ring{width:30px;height:30px;font-size:11px}
+#opsPanel .wanda-heading{margin-bottom:6px}
+#opsPanel .wanda-heading h2{font-size:13px;line-height:1.1}
+#opsPanel .online-dot{font-size:7px;letter-spacing:.08em}
+#opsPanel .messages{height:calc(100% - 66px);margin:6px 0;padding:8px;background:rgba(5,2,9,.58);border-color:rgba(255,72,201,.20);border-radius:10px}
+#opsPanel .welcome-state strong{font-size:10px}
+#opsPanel .welcome-state span{font-size:8px}
+#opsPanel .command-bar{gap:5px}
+#opsPanel .command-bar input{padding:9px 11px;font-size:9px}
+#opsPanel .command-bar button{padding:9px 11px;font-size:8px}
+#opsPanel .quick-commands{display:none}
+
+/* Footer */
+#opsPanel .footer-strip{position:absolute;z-index:25;left:0;right:0;bottom:5px;height:11px;display:flex;align-items:center;justify-content:center;gap:28px;font-size:6px;letter-spacing:.22em;text-transform:uppercase;color:#d99bd0;opacity:.42;pointer-events:none}
+
+@keyframes wRefFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes wRefSpin{to{transform:rotate(360deg)}}
+@keyframes wRefSpinReverse{to{transform:rotate(-360deg)}}
+@keyframes wRefAmbient{to{transform:rotate(360deg)}}
+
+@media(max-width:1100px){
+  #opsPanel .hero-status{left:29%;width:42%}
+  #opsPanel .systems-card,#opsPanel .quick-card,#opsPanel .summary-card{width:31.2%}
+  #opsPanel .activity-card,#opsPanel .assistant-card{width:48.7%}
+  #opsPanel .hero-orb{transform:scale(.9)}
+}
+@media(max-width:760px){
+  #opsPanel{position:relative;height:auto;min-height:100vh;overflow:auto!important}
+  #opsPanel .workspace{height:1810px;min-height:1810px;overflow:hidden}
+  #opsPanel .hero-status{left:0;top:55px;width:100%;height:360px}
+  #opsPanel .systems-card{left:10px;top:425px;width:calc(100% - 20px);height:330px}
+  #opsPanel .quick-card{left:10px;right:auto;top:765px;width:calc(100% - 20px);height:250px}
+  #opsPanel .summary-card{left:10px;right:auto;top:1025px;width:calc(100% - 20px);height:220px}
+  #opsPanel .activity-card,#opsPanel .assistant-card{left:10px;right:auto;width:calc(100% - 20px);height:260px}
+  #opsPanel .activity-card{top:1260px;bottom:auto}
+  #opsPanel .assistant-card{top:1530px;bottom:auto}
+  #opsPanel .footer-strip{top:1810px;bottom:auto}
+}
