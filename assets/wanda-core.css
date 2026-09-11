@@ -1,0 +1,28 @@
+/* WANDA CORE — mature command-center centerpiece. No mascot, no cartoon body. */
+#opsPanel .hero-status{left:30.5%;top:0;width:39%;height:535px}
+#opsPanel .core-wrap{position:absolute;inset:0;display:block!important;z-index:4}
+/* Core field */
+#opsPanel .core-wrap::before{content:"";position:absolute;left:50%;top:48%;width:360px;height:360px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,53,211,.13) 0,rgba(255,53,211,.055) 22%,rgba(117,65,255,.035) 42%,transparent 68%);filter:blur(2px);animation:corePulse 4s ease-in-out infinite}
+#opsPanel .core-wrap::after{content:"";position:absolute;left:50%;top:48%;width:280px;height:280px;transform:translate(-50%,-50%);border:1px solid rgba(255,87,220,.34);border-radius:50%;box-shadow:0 0 30px rgba(255,48,205,.12),inset 0 0 40px rgba(255,48,205,.05);animation:coreSpin 18s linear infinite}
+#opsPanel .core-orbit{left:50%!important;top:48%!important;transform:translate(-50%,-50%)!important}
+#opsPanel .orbit-one{width:310px!important;height:310px!important;border-color:rgba(255,74,207,.23)!important}
+#opsPanel .orbit-two{width:390px!important;height:190px!important;border-color:rgba(171,103,255,.20)!important}
+/* Replace the mascot with one precise luminous reactor core */
+#opsPanel .hero-orb{position:absolute;left:50%;top:48%;width:150px;height:150px;transform:translate(-50%,-50%)!important;animation:coreFloat 4s ease-in-out infinite;z-index:6}
+#opsPanel .hero-orb::before{content:"";position:absolute;inset:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 3%,#ffd9f7 8%,#ff77dc 20%,#b92caa 43%,#28052e 67%,#07020b 100%);border:1px solid rgba(255,222,250,.9);box-shadow:0 0 18px #ff4fd0,0 0 55px rgba(255,55,207,.55),inset 0 0 24px rgba(255,255,255,.25),inset 0 -20px 35px rgba(0,0,0,.7)}
+#opsPanel .hero-orb::after{content:"";position:absolute;inset:36px;border-radius:50%;border:1px solid rgba(255,177,239,.48);box-shadow:inset 0 0 18px rgba(255,65,211,.35),0 0 20px rgba(255,60,210,.25);background:radial-gradient(circle,rgba(255,255,255,.9) 0 3%,rgba(255,86,216,.8) 4% 7%,transparent 8% 100%);animation:coreBreath 2.8s ease-in-out infinite}
+#opsPanel .orb-face,#opsPanel .petal{display:none!important}
+/* Reactor ticks */
+#opsPanel .hero-orb{border-radius:50%}
+#opsPanel .hero-orb i{display:none!important}
+#opsPanel .core-name{left:50%;bottom:58px;transform:translateX(-50%);font-size:23px;letter-spacing:.46em;white-space:nowrap}
+#opsPanel .core-subtitle{left:50%;bottom:36px;transform:translateX(-50%);white-space:nowrap}
+#opsPanel .live-pill{left:50%;bottom:11px;transform:translateX(-50%);white-space:nowrap}
+#opsPanel .core-tagline{left:50%;bottom:-15px;transform:translateX(-50%);white-space:nowrap}
+/* Compact professional greeting — secondary to the core */
+#opsPanel .core-wrap:global-before{display:none}
+@keyframes corePulse{0%,100%{opacity:.65;transform:translate(-50%,-50%) scale(.96)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}}
+@keyframes coreSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes coreFloat{0%,100%{margin-top:0}50%{margin-top:-5px}}
+@keyframes coreBreath{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.08);opacity:1}}
+@media(max-width:900px){#opsPanel .hero-status{left:0;width:100%;height:440px}#opsPanel .hero-orb{top:45%}#opsPanel .core-orbit{top:45%!important}#opsPanel .core-wrap::before,#opsPanel .core-wrap::after{top:45%}}
