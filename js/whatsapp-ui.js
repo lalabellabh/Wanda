@@ -77,7 +77,7 @@ function showQr(qr) {
   if (!box) return;
   if (!qr) { box.classList.add('hidden'); box.innerHTML = ''; return; }
   box.classList.remove('hidden');
-  box.innerHTML = `<img src="${qr}" alt="WhatsApp login QR"><small>Scan this with the Lalabella WhatsApp phone.</small>`;
+  box.innerHTML = `<img src="${qr}" alt="WhatsApp login QR" style="width:min(220px,100%);height:auto;display:block;margin:0 auto;"><small>Scan this with the Lalabella WhatsApp phone.</small>`;
 }
 
 function renderMessage(m, prepend = true) {
