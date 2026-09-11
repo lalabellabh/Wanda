@@ -22,3 +22,4 @@ Thumbs.db
 *.sqlite
 *.db
 node_modules/
+backend/whatsapp-data/
