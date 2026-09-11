@@ -48,10 +48,60 @@ function broadcast(event) {
 }
 
 function addMessage(msg) {
+  if (msg.id && messages.some(existing => existing.id === msg.id)) return;
   messages.push(msg);
   while (messages.length > MAX_MESSAGES) messages.shift();
   try { persist(); } catch (error) { lastError = `log_write_failed: ${error.message}`; }
   broadcast({ type: 'message', message: msg });
+}
+
+async function captureMessage(message, source = 'live') {
+  try {
+    const chat = await message.getChat();
+    const contact = await message.getContact();
+    const classification = classify(message.body);
+    const record = {
+      id: message.id?._serialized || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      timestamp: new Date((message.timestamp || Math.floor(Date.now() / 1000)) * 1000).toISOString(),
+      chatId: chat.id?._serialized || '',
+      chatName: chat.isGroup ? (chat.name || 'WhatsApp Group') : (contact.pushname || contact.name || message.from || 'Customer'),
+      isGroup: Boolean(chat.isGroup),
+      sender: contact.pushname || contact.name || message.author || message.from || 'Unknown',
+      senderId: message.author || message.from || '',
+      type: message.type || 'chat',
+      body: message.body || '',
+      classification: classification.category,
+      classificationLabel: classification.label,
+      score: classification.score,
+      hasMedia: Boolean(message.hasMedia),
+      source
+    };
+    addMessage(record);
+  } catch (error) {
+    lastError = `message_capture_failed: ${error.message}`;
+  }
+}
+
+async function captureExistingUnread() {
+  try {
+    const chats = await client.getChats();
+    let captured = 0;
+    for (const chat of chats) {
+      const unreadCount = Number(chat.unreadCount || 0);
+      if (!unreadCount) continue;
+      const limit = Math.min(Math.max(unreadCount, 1), 100);
+      const unreadMessages = await chat.fetchMessages({ limit });
+      for (const message of unreadMessages) {
+        if (message.fromMe) continue;
+        await captureMessage(message, 'startup_unread');
+        captured++;
+      }
+    }
+    if (captured) console.log(`Captured ${captured} existing unread WhatsApp message(s)`);
+  } catch (error) {
+    lastError = `unread_scan_failed: ${error.message}`;
+    console.error(lastError);
+  }
 }
 
 const client = new Client({
@@ -71,11 +121,12 @@ client.on('authenticated', () => {
   broadcast({ type: 'status', status });
 });
 
-client.on('ready', () => {
+client.on('ready', async () => {
   status = 'connected';
   qrDataUrl = null;
   lastError = null;
   broadcast({ type: 'status', status });
+  await captureExistingUnread();
 });
 
 client.on('auth_failure', message => {
@@ -91,29 +142,7 @@ client.on('disconnected', reason => {
 });
 
 client.on('message', async message => {
-  try {
-    const chat = await message.getChat();
-    const contact = await message.getContact();
-    const classification = classify(message.body);
-    const record = {
-      id: message.id?._serialized || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      timestamp: new Date((message.timestamp || Math.floor(Date.now() / 1000)) * 1000).toISOString(),
-      chatId: chat.id?._serialized || '',
-      chatName: chat.isGroup ? (chat.name || 'WhatsApp Group') : (contact.pushname || contact.name || message.from || 'Customer'),
-      isGroup: Boolean(chat.isGroup),
-      sender: contact.pushname || contact.name || message.author || message.from || 'Unknown',
-      senderId: message.author || message.from || '',
-      type: message.type || 'chat',
-      body: message.body || '',
-      classification: classification.category,
-      classificationLabel: classification.label,
-      score: classification.score,
-      hasMedia: Boolean(message.hasMedia)
-    };
-    addMessage(record);
-  } catch (error) {
-    lastError = `message_capture_failed: ${error.message}`;
-  }
+  await captureMessage(message, 'live');
 });
 
 client.initialize().catch(error => {
