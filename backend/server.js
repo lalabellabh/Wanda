@@ -340,12 +340,6 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
-    /* =======================================================
-       ORDERS BRIDGE
-       Local-only backend receives observations from the browser
-       Order Agent and streams them to the Command Center.
-    ======================================================= */
-
     if (url.pathname === '/orders/state' && req.method === 'GET') {
       return json(res, 200, {
         ok: true,
