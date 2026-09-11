@@ -1,0 +1,125 @@
+/* Wanda Command Center — precision alignment pass.
+   Visual-only override. Character and orbit are mathematically centered. */
+*{box-sizing:border-box}
+
+/* Keep the whole hero locked to the viewport center. */
+#opsPanel .hero-status{
+  left:30.5%!important;
+  width:39%!important;
+  top:0!important;
+  height:535px!important;
+  transform:none!important;
+}
+#opsPanel .core-wrap{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  padding:0!important;
+}
+
+/* The orbit center is exactly the same X/Y anchor as Wanda. */
+#opsPanel .hero-status:before,
+#opsPanel .hero-status:after{
+  left:50%!important;
+  top:42%!important;
+}
+#opsPanel .core-orbit{
+  left:50%!important;
+  top:42%!important;
+  margin:0!important;
+  transform-origin:center center!important;
+}
+#opsPanel .orbit-one{
+  transform:translate(-50%,-50%)!important;
+}
+#opsPanel .orbit-two{
+  transform:translate(-50%,-50%) rotate(-18deg)!important;
+}
+
+/* Wanda itself: one exact center point. */
+#opsPanel .hero-orb{
+  position:absolute!important;
+  left:50%!important;
+  top:42%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  animation:w3Float 5s ease-in-out infinite!important;
+}
+
+/* Head and body share the exact same center line (110px). */
+#opsPanel .orb-face{
+  left:17px!important;
+  top:29px!important;
+}
+#opsPanel .hero-orb:before{
+  left:54px!important;
+  top:143px!important;
+}
+#opsPanel .hero-orb:after{
+  left:48px!important;
+  top:218px!important;
+}
+#opsPanel .p1{left:22px!important}
+#opsPanel .p2{right:22px!important}
+
+/* Keep the face internals centered inside the head. */
+#opsPanel .orb-face:before{
+  left:29px!important;
+  top:25px!important;
+}
+#opsPanel .orb-face:after{
+  right:22px!important;
+  top:33px!important;
+}
+#opsPanel .orb-eye.left{left:65px!important}
+#opsPanel .orb-eye.right{right:65px!important}
+#opsPanel .orb-smile{left:83px!important}
+
+/* Put the identity stack on the same vertical center axis. */
+#opsPanel .core-name,
+#opsPanel .core-subtitle,
+#opsPanel .live-pill,
+#opsPanel .core-tagline{
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  margin-left:0!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+
+/* Speech bubble stays beside Wanda instead of pulling the visual center. */
+#opsPanel .core-wrap:before{
+  left:calc(50% - 168px)!important;
+  top:96px!important;
+}
+#opsPanel .core-wrap:after{
+  left:calc(50% - 151px)!important;
+  top:139px!important;
+}
+
+@keyframes w3Float{
+  0%,100%{transform:translate(-50%,-50%)}
+  50%{transform:translate(-50%,calc(-50% - 5px))}
+}
+
+/* Desktop: give the centered character a little more breathing room. */
+@media(min-width:1101px){
+  #opsPanel .hero-orb{top:43%!important}
+  #opsPanel .hero-status:before,
+  #opsPanel .hero-status:after,
+  #opsPanel .core-orbit{top:43%!important}
+}
+
+/* Smaller desktop screens: keep everything centered without overlap. */
+@media(max-width:1100px) and (min-width:761px){
+  #opsPanel .hero-orb{top:42%!important;transform:translate(-50%,-50%) scale(.92)!important}
+  #opsPanel .hero-status:before,
+  #opsPanel .hero-status:after,
+  #opsPanel .core-orbit{top:42%!important}
+}
