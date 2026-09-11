@@ -1,125 +1,371 @@
-/* Wanda Command Center — precision alignment pass.
-   Visual-only override. Character and orbit are mathematically centered. */
+/*
+  WANDA COMMAND CENTER — CORE REBUILD
+  ------------------------------------------------------------
+  The supplied image is a visual reference only.
+  This file recreates the visual language with CSS/SVG primitives:
+  neon cyan/magenta waveform, central AI core, particles and glow.
+  No reference image is embedded or used.
+  Existing HTML IDs and application logic remain untouched.
+*/
+
 *{box-sizing:border-box}
 
-/* Keep the whole hero locked to the viewport center. */
-#opsPanel .hero-status{
-  left:30.5%!important;
-  width:39%!important;
-  top:0!important;
-  height:535px!important;
-  transform:none!important;
+:root{
+  --w-bg:#07040d;
+  --w-panel:rgba(12,7,19,.82);
+  --w-line:rgba(244,57,206,.42);
+  --w-pink:#ff35cf;
+  --w-pink2:#ff74e2;
+  --w-cyan:#36eaff;
+  --w-cyan2:#82f7ff;
+  --w-text:#f8f2fb;
+  --w-muted:#aaa0b4;
 }
-#opsPanel .core-wrap{
-  position:absolute!important;
-  left:0!important;
-  right:0!important;
-  top:0!important;
-  bottom:0!important;
+
+/* ---------- Page frame ---------- */
+#opsPanel{
+  position:fixed!important;
+  inset:0!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(126,16,112,.16),transparent 30%),
+    radial-gradient(circle at 50% 75%,rgba(35,104,130,.07),transparent 35%),
+    #07040d!important;
+}
+
+#opsPanel .command-layout,
+#opsPanel .workspace{
   width:100%!important;
   height:100%!important;
-  display:block!important;
+  min-height:0!important;
+}
+
+#opsPanel .sidebar,
+#opsPanel .workspace-top,
+#opsPanel .hero-copy,
+#opsPanel .core-side-note{
+  display:none!important;
+}
+
+#opsPanel .workspace{
+  position:relative!important;
   padding:0!important;
 }
 
-/* The orbit center is exactly the same X/Y anchor as Wanda. */
-#opsPanel .hero-status:before,
-#opsPanel .hero-status:after{
-  left:50%!important;
-  top:42%!important;
-}
-#opsPanel .core-orbit{
-  left:50%!important;
-  top:42%!important;
+/* ---------- Main composition ---------- */
+#opsPanel .hero-status{
+  position:absolute!important;
+  left:25%!important;
+  top:58px!important;
+  width:50%!important;
+  height:calc(100vh - 420px)!important;
+  min-height:430px!important;
+  max-height:610px!important;
   margin:0!important;
-  transform-origin:center center!important;
-}
-#opsPanel .orbit-one{
-  transform:translate(-50%,-50%)!important;
-}
-#opsPanel .orbit-two{
-  transform:translate(-50%,-50%) rotate(-18deg)!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  z-index:2!important;
 }
 
-/* Wanda itself: one exact center point. */
-#opsPanel .hero-orb{
+/* ---------- Recreate the flowing waveform ---------- */
+#opsPanel .hero-status:before{
+  content:""!important;
   position:absolute!important;
   left:50%!important;
-  top:42%!important;
-  margin:0!important;
+  top:46%!important;
+  width:min(920px,88vw)!important;
+  height:330px!important;
   transform:translate(-50%,-50%)!important;
-  animation:w3Float 5s ease-in-out infinite!important;
+  pointer-events:none!important;
+  opacity:.92!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 360'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' x2='1'%3E%3Cstop stop-color='%2300eaff' stop-opacity='0'/%3E%3Cstop offset='.22' stop-color='%2336eaff'/%3E%3Cstop offset='.48' stop-color='%23ff35cf'/%3E%3Cstop offset='.72' stop-color='%2336eaff'/%3E%3Cstop offset='1' stop-color='%2300eaff' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cfilter id='b'%3E%3CfeGaussianBlur stdDeviation='7'/%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23g1)' stroke-linecap='round'%3E%3Cpath d='M0 180 C90 60 150 60 230 180 S370 300 450 180 S590 60 600 180 S740 300 820 180 S970 60 1040 180 S1140 300 1200 180' stroke-width='18' opacity='.20' filter='url(%23b)'/%3E%3Cpath d='M0 180 C90 60 150 60 230 180 S370 300 450 180 S590 60 600 180 S740 300 820 180 S970 60 1040 180 S1140 300 1200 180' stroke-width='5' opacity='.82'/%3E%3Cpath d='M0 180 C90 85 155 80 230 180 S370 275 450 180 S590 85 600 180 S740 275 820 180 S970 85 1040 180 S1140 275 1200 180' stroke-width='2' opacity='.58'/%3E%3C/g%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+  filter:drop-shadow(0 0 13px rgba(255,53,207,.28)) drop-shadow(0 0 22px rgba(54,234,255,.20))!important;
+  animation:wWaveBreath 5s ease-in-out infinite!important;
 }
 
-/* Head and body share the exact same center line (110px). */
-#opsPanel .orb-face{
-  left:17px!important;
-  top:29px!important;
+/* A second, softer waveform creates depth without using the reference image. */
+#opsPanel .hero-status:after{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:46%!important;
+  width:min(820px,80vw)!important;
+  height:300px!important;
+  transform:translate(-50%,-50%) scaleY(.82)!important;
+  pointer-events:none!important;
+  opacity:.28!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 360'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0' x2='1'%3E%3Cstop stop-color='%2336eaff'/%3E%3Cstop offset='.5' stop-color='%23ff35cf'/%3E%3Cstop offset='1' stop-color='%2336eaff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 180 C90 60 150 60 230 180 S370 300 450 180 S590 60 600 180 S740 300 820 180 S970 60 1040 180 S1140 300 1200 180' fill='none' stroke='url(%23g2)' stroke-width='2'/%3E%3C/svg%3E")!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  animation:wWaveDrift 8s ease-in-out infinite!important;
 }
-#opsPanel .hero-orb:before{
-  left:54px!important;
-  top:143px!important;
-}
-#opsPanel .hero-orb:after{
-  left:48px!important;
-  top:218px!important;
-}
-#opsPanel .p1{left:22px!important}
-#opsPanel .p2{right:22px!important}
 
-/* Keep the face internals centered inside the head. */
-#opsPanel .orb-face:before{
-  left:29px!important;
-  top:25px!important;
+/* ---------- Central AI core ---------- */
+#opsPanel .core-wrap{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  pointer-events:none!important;
+  z-index:5!important;
 }
-#opsPanel .orb-face:after{
-  right:22px!important;
-  top:33px!important;
-}
-#opsPanel .orb-eye.left{left:65px!important}
-#opsPanel .orb-eye.right{right:65px!important}
-#opsPanel .orb-smile{left:83px!important}
 
-/* Put the identity stack on the same vertical center axis. */
+#opsPanel .hero-orb,
+#opsPanel .orb-face,
+#opsPanel .petal,
+#opsPanel .core-orbit{
+  display:none!important;
+}
+
+#opsPanel .core-wrap:before{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:46%!important;
+  width:168px!important;
+  height:168px!important;
+  transform:translate(-50%,-50%)!important;
+  border-radius:50%!important;
+  background:
+    radial-gradient(circle at 50% 48%,#fef7ff 0 4%,#8ff8ff 5% 7%,#ff35cf 8% 12%,rgba(255,53,207,.34) 22%,rgba(54,234,255,.13) 42%,transparent 69%),
+    radial-gradient(circle,#120a20 0 42%,rgba(17,7,28,.78) 43% 54%,transparent 55%)!important;
+  border:1px solid rgba(255,255,255,.46)!important;
+  box-shadow:
+    0 0 0 7px rgba(255,53,207,.08),
+    0 0 0 18px rgba(54,234,255,.045),
+    0 0 28px rgba(255,53,207,.65),
+    0 0 65px rgba(54,234,255,.32),
+    inset 0 0 25px rgba(255,53,207,.42)!important;
+  animation:wCorePulse 3.2s ease-in-out infinite!important;
+}
+
+#opsPanel .core-wrap:after{
+  content:"✦"!important;
+  position:absolute!important;
+  left:50%!important;
+  top:46%!important;
+  width:238px!important;
+  height:238px!important;
+  transform:translate(-50%,-50%)!important;
+  border-radius:50%!important;
+  border:1px solid rgba(255,53,207,.28)!important;
+  box-shadow:
+    0 0 0 28px rgba(54,234,255,.025),
+    0 0 0 58px rgba(255,53,207,.025),
+    0 0 34px rgba(255,53,207,.14)!important;
+  color:rgba(255,255,255,.7)!important;
+  font-size:11px!important;
+  line-height:238px!important;
+  text-align:center!important;
+  animation:wCoreRing 7s linear infinite!important;
+}
+
+/* Small spectral particles around the core. */
+#opsPanel .core-name:before{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:-205px!important;
+  width:4px!important;
+  height:4px!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  box-shadow:
+    -190px 65px 0 1px rgba(54,234,255,.9),
+    205px 90px 0 1px rgba(255,53,207,.9),
+    -150px -35px 0 1px rgba(255,255,255,.75),
+    170px -60px 0 1px rgba(54,234,255,.8),
+    95px 135px 0 1px rgba(255,53,207,.7),
+    -110px 145px 0 1px rgba(54,234,255,.7)!important;
+  animation:wParticles 4.5s ease-in-out infinite alternate!important;
+}
+
+/* ---------- Identity ---------- */
 #opsPanel .core-name,
 #opsPanel .core-subtitle,
 #opsPanel .live-pill,
 #opsPanel .core-tagline{
+  position:absolute!important;
   left:50%!important;
   right:auto!important;
   transform:translateX(-50%)!important;
-  margin-left:0!important;
+  margin:0!important;
   text-align:center!important;
   white-space:nowrap!important;
+  z-index:8!important;
 }
 
-/* Speech bubble stays beside Wanda instead of pulling the visual center. */
-#opsPanel .core-wrap:before{
-  left:calc(50% - 168px)!important;
-  top:96px!important;
-}
-#opsPanel .core-wrap:after{
-  left:calc(50% - 151px)!important;
-  top:139px!important;
-}
-
-@keyframes w3Float{
-  0%,100%{transform:translate(-50%,-50%)}
-  50%{transform:translate(-50%,calc(-50% - 5px))}
+#opsPanel .core-name{
+  top:calc(46% + 108px)!important;
+  bottom:auto!important;
+  font-size:26px!important;
+  font-weight:800!important;
+  letter-spacing:.55em!important;
+  color:#fff!important;
+  text-shadow:0 0 12px rgba(255,53,207,.9),0 0 26px rgba(255,53,207,.45)!important;
 }
 
-/* Desktop: give the centered character a little more breathing room. */
-@media(min-width:1101px){
-  #opsPanel .hero-orb{top:43%!important}
-  #opsPanel .hero-status:before,
-  #opsPanel .hero-status:after,
-  #opsPanel .core-orbit{top:43%!important}
+#opsPanel .core-subtitle{
+  top:calc(46% + 145px)!important;
+  bottom:auto!important;
+  font-size:12px!important;
+  letter-spacing:.18em!important;
+  color:#d4c9da!important;
 }
 
-/* Smaller desktop screens: keep everything centered without overlap. */
+#opsPanel .live-pill{
+  top:calc(46% + 171px)!important;
+  bottom:auto!important;
+  padding:6px 13px!important;
+  border:1px solid rgba(48,231,190,.58)!important;
+  border-radius:999px!important;
+  background:rgba(8,30,28,.62)!important;
+  color:#69f6d3!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  letter-spacing:.14em!important;
+  box-shadow:0 0 15px rgba(48,231,190,.12)!important;
+}
+
+#opsPanel .core-tagline{
+  top:calc(46% + 207px)!important;
+  bottom:auto!important;
+  font-size:10px!important;
+  font-style:italic!important;
+  color:#a99eae!important;
+  letter-spacing:.05em!important;
+}
+
+/* ---------- Surrounding cards ---------- */
+#opsPanel .systems-card,
+#opsPanel .quick-card,
+#opsPanel .summary-card,
+#opsPanel .activity-card,
+#opsPanel .assistant-card{
+  position:absolute!important;
+  margin:0!important;
+  background:linear-gradient(145deg,rgba(17,9,26,.88),rgba(6,4,12,.78))!important;
+  border:1px solid rgba(245,48,201,.36)!important;
+  box-shadow:0 16px 45px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.035),0 0 22px rgba(245,48,201,.035)!important;
+  backdrop-filter:blur(14px)!important;
+}
+
+#opsPanel .systems-card{
+  left:12px!important;
+  top:118px!important;
+  width:29%!important;
+  height:330px!important;
+}
+
+#opsPanel .quick-card{
+  right:12px!important;
+  top:66px!important;
+  width:29%!important;
+  height:270px!important;
+}
+
+#opsPanel .summary-card{
+  right:12px!important;
+  top:350px!important;
+  width:29%!important;
+  height:170px!important;
+}
+
+#opsPanel .activity-card{
+  left:12px!important;
+  bottom:24px!important;
+  width:49%!important;
+  height:178px!important;
+}
+
+#opsPanel .assistant-card{
+  right:12px!important;
+  bottom:24px!important;
+  width:49%!important;
+  height:178px!important;
+}
+
+/* ---------- Readability ---------- */
+#opsPanel .eyebrow{font-size:10px!important;letter-spacing:.16em!important}
+#opsPanel .systems-card h3,
+#opsPanel .quick-card h3,
+#opsPanel .summary-card h3{font-size:15px!important}
+#opsPanel .system-row b,
+#opsPanel .quick-action b{font-size:11px!important}
+#opsPanel .system-row span,
+#opsPanel .quick-action small,
+#opsPanel .summary-item small{font-size:9px!important}
+#opsPanel .summary-item b{font-size:18px!important}
+
+/* Compact list inside systems. */
+#opsPanel .system-list{gap:7px!important}
+#opsPanel .system-row{min-height:48px!important;padding:8px 10px!important}
+
+/* ---------- Bottom cards ---------- */
+#opsPanel .assistant-card .messages{min-height:76px!important}
+#opsPanel .assistant-card .quick-commands{display:none!important}
+#opsPanel .activity-feed{height:112px!important}
+#opsPanel .footer-strip{position:fixed!important;left:12px!important;right:12px!important;bottom:3px!important;height:16px!important;z-index:20!important;font-size:8px!important}
+
+/* ---------- Animation ---------- */
+@keyframes wWaveBreath{
+  0%,100%{transform:translate(-50%,-50%) scaleX(.985);filter:drop-shadow(0 0 10px rgba(255,53,207,.22)) drop-shadow(0 0 18px rgba(54,234,255,.15));}
+  50%{transform:translate(-50%,-50%) scaleX(1.015);filter:drop-shadow(0 0 19px rgba(255,53,207,.42)) drop-shadow(0 0 30px rgba(54,234,255,.24));}
+}
+
+@keyframes wWaveDrift{
+  0%,100%{transform:translate(-50%,-50%) scaleY(.78);opacity:.22}
+  50%{transform:translate(-50%,-50%) scaleY(.9);opacity:.38}
+}
+
+@keyframes wCorePulse{
+  0%,100%{transform:translate(-50%,-50%) scale(.94);filter:saturate(.95)}
+  50%{transform:translate(-50%,-50%) scale(1.055);filter:saturate(1.35)}
+}
+
+@keyframes wCoreRing{
+  from{transform:translate(-50%,-50%) rotate(0deg)}
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+
+@keyframes wParticles{
+  from{transform:translate(-50%,-50%) scale(.7);opacity:.42}
+  to{transform:translate(-50%,-50%) scale(1.15);opacity:.95}
+}
+
+/* ---------- Tablet ---------- */
 @media(max-width:1100px) and (min-width:761px){
-  #opsPanel .hero-orb{top:42%!important;transform:translate(-50%,-50%) scale(.92)!important}
-  #opsPanel .hero-status:before,
-  #opsPanel .hero-status:after,
-  #opsPanel .core-orbit{top:42%!important}
+  #opsPanel .hero-status{left:27%!important;width:46%!important;top:58px!important;height:calc(100vh - 400px)!important}
+  #opsPanel .systems-card{width:26%!important}
+  #opsPanel .quick-card,#opsPanel .summary-card{width:26%!important}
+  #opsPanel .activity-card{width:48%!important}
+  #opsPanel .assistant-card{width:48%!important}
+  #opsPanel .hero-status:before{width:820px!important}
+}
+
+/* ---------- Mobile ---------- */
+@media(max-width:760px){
+  #opsPanel{overflow:auto!important}
+  #opsPanel .hero-status{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:390px!important;min-height:390px!important;margin-top:54px!important}
+  #opsPanel .hero-status:before{top:42%!important;width:125vw!important;height:260px!important}
+  #opsPanel .hero-status:after{top:42%!important;width:112vw!important;height:230px!important}
+  #opsPanel .core-wrap:before{top:42%!important;width:132px!important;height:132px!important}
+  #opsPanel .core-wrap:after{top:42%!important;width:190px!important;height:190px!important;line-height:190px!important}
+  #opsPanel .core-name{top:calc(42% + 88px)!important;font-size:21px!important}
+  #opsPanel .core-subtitle{top:calc(42% + 119px)!important;font-size:10px!important}
+  #opsPanel .live-pill{top:calc(42% + 143px)!important}
+  #opsPanel .core-tagline{top:calc(42% + 177px)!important}
+  #opsPanel .systems-card,
+  #opsPanel .quick-card,
+  #opsPanel .summary-card,
+  #opsPanel .activity-card,
+  #opsPanel .assistant-card{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:calc(100% - 24px)!important;height:auto!important;margin:12px!important}
+  #opsPanel .systems-card{min-height:330px!important}
+  #opsPanel .quick-card{min-height:270px!important}
+  #opsPanel .summary-card{min-height:170px!important}
+  #opsPanel .activity-card,#opsPanel .assistant-card{min-height:178px!important}
 }
