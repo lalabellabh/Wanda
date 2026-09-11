@@ -1,28 +1,48 @@
-/* WANDA CORE — mature command-center centerpiece. No mascot, no cartoon body. */
+/* WANDA CORE — premium command-center centerpiece.
+   No mascot, no cartoon body. Existing application logic is untouched. */
 #opsPanel .hero-status{left:30.5%;top:0;width:39%;height:535px}
 #opsPanel .core-wrap{position:absolute;inset:0;display:block!important;z-index:4}
-/* Core field */
-#opsPanel .core-wrap::before{content:"";position:absolute;left:50%;top:48%;width:360px;height:360px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,53,211,.13) 0,rgba(255,53,211,.055) 22%,rgba(117,65,255,.035) 42%,transparent 68%);filter:blur(2px);animation:corePulse 4s ease-in-out infinite}
-#opsPanel .core-wrap::after{content:"";position:absolute;left:50%;top:48%;width:280px;height:280px;transform:translate(-50%,-50%);border:1px solid rgba(255,87,220,.34);border-radius:50%;box-shadow:0 0 30px rgba(255,48,205,.12),inset 0 0 40px rgba(255,48,205,.05);animation:coreSpin 18s linear infinite}
-#opsPanel .core-orbit{left:50%!important;top:48%!important;transform:translate(-50%,-50%)!important}
-#opsPanel .orbit-one{width:310px!important;height:310px!important;border-color:rgba(255,74,207,.23)!important}
-#opsPanel .orbit-two{width:390px!important;height:190px!important;border-color:rgba(171,103,255,.20)!important}
-/* Replace the mascot with one precise luminous reactor core */
-#opsPanel .hero-orb{position:absolute;left:50%;top:48%;width:150px;height:150px;transform:translate(-50%,-50%)!important;animation:coreFloat 4s ease-in-out infinite;z-index:6}
-#opsPanel .hero-orb::before{content:"";position:absolute;inset:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 3%,#ffd9f7 8%,#ff77dc 20%,#b92caa 43%,#28052e 67%,#07020b 100%);border:1px solid rgba(255,222,250,.9);box-shadow:0 0 18px #ff4fd0,0 0 55px rgba(255,55,207,.55),inset 0 0 24px rgba(255,255,255,.25),inset 0 -20px 35px rgba(0,0,0,.7)}
-#opsPanel .hero-orb::after{content:"";position:absolute;inset:36px;border-radius:50%;border:1px solid rgba(255,177,239,.48);box-shadow:inset 0 0 18px rgba(255,65,211,.35),0 0 20px rgba(255,60,210,.25);background:radial-gradient(circle,rgba(255,255,255,.9) 0 3%,rgba(255,86,216,.8) 4% 7%,transparent 8% 100%);animation:coreBreath 2.8s ease-in-out infinite}
-#opsPanel .orb-face,#opsPanel .petal{display:none!important}
-/* Reactor ticks */
-#opsPanel .hero-orb{border-radius:50%}
-#opsPanel .hero-orb i{display:none!important}
-#opsPanel .core-name{left:50%;bottom:58px;transform:translateX(-50%);font-size:23px;letter-spacing:.46em;white-space:nowrap}
-#opsPanel .core-subtitle{left:50%;bottom:36px;transform:translateX(-50%);white-space:nowrap}
-#opsPanel .live-pill{left:50%;bottom:11px;transform:translateX(-50%);white-space:nowrap}
-#opsPanel .core-tagline{left:50%;bottom:-15px;transform:translateX(-50%);white-space:nowrap}
-/* Compact professional greeting — secondary to the core */
-#opsPanel .core-wrap:global-before{display:none}
-@keyframes corePulse{0%,100%{opacity:.65;transform:translate(-50%,-50%) scale(.96)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}}
-@keyframes coreSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-@keyframes coreFloat{0%,100%{margin-top:0}50%{margin-top:-5px}}
-@keyframes coreBreath{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.08);opacity:1}}
-@media(max-width:900px){#opsPanel .hero-status{left:0;width:100%;height:440px}#opsPanel .hero-orb{top:45%}#opsPanel .core-orbit{top:45%!important}#opsPanel .core-wrap::before,#opsPanel .core-wrap::after{top:45%}}
+
+/* Atmospheric energy field */
+#opsPanel .core-wrap::before{content:"";position:absolute;left:50%;top:45%;width:620px;height:190px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(255,38,202,.18) 0,rgba(63,221,255,.08) 24%,transparent 67%);filter:blur(4px);animation:wandaField 4s ease-in-out infinite;pointer-events:none}
+#opsPanel .core-wrap::after{content:"";position:absolute;left:50%;top:45%;width:700px;height:250px;transform:translate(-50%,-50%);border-top:1px solid rgba(255,54,209,.34);border-bottom:1px solid rgba(52,225,255,.18);border-radius:50%;box-shadow:0 0 35px rgba(255,42,203,.12);animation:wandaWave 4.5s ease-in-out infinite;pointer-events:none}
+
+/* Existing orbit elements become the large orbital rings */
+#opsPanel .core-orbit{left:50%!important;top:45%!important;transform:translate(-50%,-50%)!important;pointer-events:none;z-index:2}
+#opsPanel .orbit-one{width:300px!important;height:300px!important;border-color:rgba(255,74,207,.25)!important;box-shadow:0 0 28px rgba(255,52,207,.08)!important}
+#opsPanel .orbit-two{width:430px!important;height:210px!important;border-color:rgba(60,224,255,.16)!important;box-shadow:0 0 25px rgba(55,224,255,.06)!important}
+
+/* One precise reactor core */
+#opsPanel .hero-orb{position:absolute!important;left:50%!important;top:45%!important;width:170px!important;height:170px!important;transform:translate(-50%,-50%)!important;border-radius:50%!important;border:1px solid rgba(255,129,228,.72)!important;background:radial-gradient(circle at 50% 48%,rgba(255,255,255,.98) 0 2%,rgba(83,241,255,.95) 3% 5%,rgba(255,56,211,.9) 7% 12%,rgba(58,11,64,.98) 28%,#08020e 62%,#020107 100%)!important;box-shadow:0 0 0 7px rgba(255,57,211,.035),0 0 0 17px rgba(67,227,255,.025),0 0 30px rgba(255,48,205,.62),0 0 75px rgba(255,43,201,.3),inset 0 0 34px rgba(255,42,207,.4),inset 0 0 80px rgba(43,221,255,.1)!important;animation:wandaCorePulse 3.6s ease-in-out infinite!important;z-index:7!important}
+
+#opsPanel .hero-orb::before{content:""!important;position:absolute!important;inset:-20px!important;border-radius:50%!important;border:1px solid rgba(255,65,211,.32)!important;background:radial-gradient(circle,transparent 64%,rgba(255,58,210,.08) 65%,transparent 70%)!important;box-shadow:0 0 22px rgba(255,45,204,.14)!important;animation:wandaRing 3.6s ease-in-out infinite!important;z-index:-1!important}
+#opsPanel .hero-orb::after{content:""!important;position:absolute!important;inset:26px!important;border-radius:50%!important;border:1px solid rgba(91,237,255,.4)!important;background:conic-gradient(from 20deg,transparent 0 24%,rgba(72,231,255,.55) 27%,transparent 31% 48%,rgba(255,61,210,.7) 51%,transparent 55% 78%,rgba(72,231,255,.42) 81%,transparent 85%)!important;-webkit-mask:radial-gradient(circle,transparent 63%,#000 64%,#000 69%,transparent 70%)!important;mask:radial-gradient(circle,transparent 63%,#000 64%,#000 69%,transparent 70%)!important;animation:wandaSpin 5s linear infinite!important;z-index:2!important}
+
+/* Inner reactor aperture */
+#opsPanel .orb-face{display:block!important;position:absolute!important;left:50%!important;top:50%!important;width:106px!important;height:106px!important;transform:translate(-50%,-50%)!important;border-radius:50%!important;border:1px solid rgba(255,111,222,.52)!important;background:radial-gradient(circle at 45% 40%,rgba(255,255,255,.12),transparent 15%),radial-gradient(circle,#1b0928 0,#08020e 64%,#020107 100%)!important;box-shadow:inset 0 0 25px rgba(255,39,204,.35),0 0 18px rgba(255,52,208,.22)!important;z-index:3!important}
+#opsPanel .orb-face::before{content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:72px!important;height:72px!important;transform:translate(-50%,-50%)!important;border-radius:50%!important;background:radial-gradient(circle,rgba(255,255,255,.96) 0 2%,rgba(71,238,255,.95) 3% 7%,rgba(255,60,210,.85) 8% 13%,transparent 14%)!important;box-shadow:0 0 18px rgba(255,55,211,.72),0 0 34px rgba(61,225,255,.22)!important;animation:wandaInner 2.3s ease-in-out infinite!important}
+#opsPanel .orb-face::after{content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:44px!important;height:44px!important;transform:translate(-50%,-50%)!important;border-radius:50%!important;border:2px solid rgba(255,255,255,.8)!important;box-shadow:0 0 9px #fff,0 0 20px #ff48cc,0 0 35px rgba(255,54,209,.72)!important}
+#opsPanel .orb-eye,#opsPanel .orb-smile{display:none!important}
+
+/* Existing decorative nodes become clean waveform traces */
+#opsPanel .petal{display:block!important;background:transparent!important;border:0!important;box-shadow:none!important;z-index:4!important;opacity:.9!important}
+#opsPanel .p1,#opsPanel .p2,#opsPanel .p3,#opsPanel .p4{width:205px!important;height:62px!important;top:calc(45% - 31px)!important;border-radius:50%!important;border-top:2px solid rgba(62,232,255,.68)!important;filter:drop-shadow(0 0 8px rgba(56,227,255,.5))!important}
+#opsPanel .p1{left:-182px!important;transform:rotate(9deg)!important}
+#opsPanel .p2{right:-182px!important;transform:rotate(-9deg)!important}
+#opsPanel .p3{left:-174px!important;top:calc(45% + 2px)!important;border-top-color:rgba(255,54,208,.54)!important;transform:rotate(-8deg)!important}
+#opsPanel .p4{right:-174px!important;top:calc(45% + 2px)!important;border-top-color:rgba(255,54,208,.54)!important;transform:rotate(8deg)!important}
+
+/* Keep the labels on the same center axis */
+#opsPanel .core-name{left:50%!important;bottom:55px!important;transform:translateX(-50%)!important;font-size:24px!important;letter-spacing:.48em!important;white-space:nowrap;color:#ff8fe0!important;text-shadow:0 0 18px rgba(255,56,207,.72)!important}
+#opsPanel .core-subtitle{left:50%!important;bottom:34px!important;transform:translateX(-50%)!important;white-space:nowrap;font-size:10px!important;letter-spacing:.16em!important;color:#dffbff!important}
+#opsPanel .live-pill{left:50%!important;bottom:10px!important;transform:translateX(-50%)!important;white-space:nowrap}
+#opsPanel .core-tagline{left:50%!important;bottom:-15px!important;transform:translateX(-50%)!important;white-space:nowrap}
+#opsPanel .core-side-note{display:none!important}
+
+@keyframes wandaCorePulse{0%,100%{transform:translate(-50%,-50%) scale(.97);filter:saturate(.9)}50%{transform:translate(-50%,-50%) scale(1.035);filter:saturate(1.22)}}
+@keyframes wandaRing{0%,100%{opacity:.42;transform:scale(.97)}50%{opacity:.95;transform:scale(1.04)}}
+@keyframes wandaSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes wandaInner{0%,100%{transform:translate(-50%,-50%) scale(.9);opacity:.72}50%{transform:translate(-50%,-50%) scale(1.08);opacity:1}}
+@keyframes wandaField{0%,100%{transform:translate(-50%,-50%) scaleX(.94);opacity:.58}50%{transform:translate(-50%,-50%) scaleX(1.06);opacity:1}}
+@keyframes wandaWave{0%,100%{transform:translate(-50%,-50%) scaleX(.93);opacity:.5}50%{transform:translate(-50%,-50%) scaleX(1.05);opacity:1}}
+@media(max-width:900px){#opsPanel .hero-status{left:0;width:100%;height:440px}#opsPanel .hero-orb{width:150px!important;height:150px!important;top:45%!important}#opsPanel .orb-face{width:94px!important;height:94px!important}#opsPanel .core-orbit{top:45%!important}#opsPanel .core-wrap::before,#opsPanel .core-wrap::after{top:45%}}
