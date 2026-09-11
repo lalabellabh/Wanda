@@ -1,0 +1,74 @@
+/* WANDA — exact reference-wave core
+   Uses the user's supplied neon microphone-wave reference as the visual centerpiece.
+   Visual-only layer; existing application logic and IDs remain untouched.
+*/
+#opsPanel .hero-orb,
+#opsPanel .orb-face,
+#opsPanel .petal,
+#opsPanel .core-orbit {
+  display:none!important;
+}
+
+#opsPanel .hero-status {
+  overflow:visible!important;
+}
+
+#opsPanel .core-wrap {
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  z-index:5!important;
+  pointer-events:none!important;
+}
+
+#opsPanel .core-wrap::before {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:44%!important;
+  width:min(760px,72vw)!important;
+  aspect-ratio:759 / 329!important;
+  transform:translate(-50%,-50%)!important;
+  background-image:url("data:image/webp;base64,UklGRk4AAABXRUJQVlA4IDIAAADQAwCdASoUAAwAAkA4JZQCdAD0n8VQAA3AA/vuUAAA=")!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:contain!important;
+  mix-blend-mode:screen!important;
+  opacity:.92!important;
+  filter:saturate(1.2) contrast(1.12) brightness(.88) drop-shadow(0 0 16px rgba(255,35,205,.28)) drop-shadow(0 0 34px rgba(40,220,255,.16))!important;
+  animation:wandaReferenceWave 5.5s ease-in-out infinite!important;
+}
+
+#opsPanel .core-wrap::after {
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:44%!important;
+  width:min(620px,58vw)!important;
+  height:min(250px,24vw)!important;
+  transform:translate(-50%,-50%)!important;
+  border-radius:50%!important;
+  background:radial-gradient(ellipse,rgba(255,35,205,.18) 0%,rgba(62,225,255,.08) 32%,transparent 70%)!important;
+  filter:blur(16px)!important;
+  opacity:.72!important;
+  animation:wandaReferenceGlow 3.8s ease-in-out infinite!important;
+  z-index:-1!important;
+}
+
+#opsPanel .core-name { left:50%!important; bottom:54px!important; transform:translateX(-50%)!important; white-space:nowrap!important; font-size:24px!important; letter-spacing:.52em!important; }
+#opsPanel .core-subtitle { left:50%!important; bottom:33px!important; transform:translateX(-50%)!important; white-space:nowrap!important; }
+#opsPanel .live-pill { left:50%!important; bottom:9px!important; transform:translateX(-50%)!important; white-space:nowrap!important; }
+#opsPanel .core-tagline { left:50%!important; bottom:-15px!important; transform:translateX(-50%)!important; white-space:nowrap!important; }
+
+@keyframes wandaReferenceWave {
+  0%,100% { transform:translate(-50%,-50%) scale(.985); filter:saturate(1.12) contrast(1.08) brightness(.86) drop-shadow(0 0 14px rgba(255,35,205,.24)) drop-shadow(0 0 30px rgba(40,220,255,.14)); }
+  50% { transform:translate(-50%,-50%) scale(1.018); filter:saturate(1.35) contrast(1.18) brightness(1) drop-shadow(0 0 22px rgba(255,35,205,.42)) drop-shadow(0 0 44px rgba(40,220,255,.24)); }
+}
+@keyframes wandaReferenceGlow {
+  0%,100% { transform:translate(-50%,-50%) scale(.94); opacity:.48; }
+  50% { transform:translate(-50%,-50%) scale(1.08); opacity:.9; }
+}
+@media(max-width:900px) {
+  #opsPanel .core-wrap::before { width:min(620px,110vw)!important; top:43%!important; }
+  #opsPanel .core-wrap::after { width:min(500px,90vw)!important; height:210px!important; top:43%!important; }
+}
