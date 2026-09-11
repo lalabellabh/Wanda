@@ -29,12 +29,47 @@ function ensurePanel() {
   return panel;
 }
 
+function setSystemConnection(status, error = '') {
+  const rows = document.querySelectorAll('.system-list .system-row');
+  let row = null;
+  rows.forEach(candidate => {
+    const name = candidate.querySelector('b');
+    if (name && name.textContent.trim().toLowerCase() === 'whatsapp') row = candidate;
+  });
+  if (!row) return;
+
+  const text = row.querySelector('span:not(.system-icon)');
+  const dot = row.querySelector('.connection-dot');
+  const connected = status === 'connected';
+  const qrReady = status === 'qr_ready';
+  const starting = status === 'starting' || status === 'authenticated';
+
+  if (text) {
+    if (connected) text.textContent = 'Connected · Local watcher';
+    else if (qrReady) text.textContent = 'QR ready · Scan WhatsApp';
+    else if (starting) text.textContent = 'Watcher starting…';
+    else if (status === 'auth_failure') text.textContent = 'Authentication failed';
+    else if (status === 'disconnected') text.textContent = 'WhatsApp disconnected';
+    else if (status === 'error') text.textContent = 'Watcher error';
+    else text.textContent = 'Watcher offline';
+    if (error) text.title = error;
+  }
+
+  if (dot) {
+    dot.classList.toggle('online', connected);
+    dot.classList.toggle('warning', qrReady || starting);
+    dot.classList.toggle('error', status === 'error' || status === 'auth_failure' || status === 'disconnected');
+  }
+}
+
 function setWaStatus(status, error = '') {
   const badge = document.getElementById('waStatusBadge');
-  if (!badge) return;
-  const labels = { connected: '● CONNECTED', qr_ready: 'QR READY', authenticated: 'AUTHENTICATING', starting: 'STARTING', disconnected: 'DISCONNECTED', error: 'ERROR', auth_failure: 'AUTH FAILED' };
-  badge.textContent = labels[status] || String(status || 'OFFLINE').toUpperCase();
-  badge.title = error || '';
+  if (badge) {
+    const labels = { connected: '● CONNECTED', qr_ready: 'QR READY', authenticated: 'AUTHENTICATING', starting: 'STARTING', disconnected: 'DISCONNECTED', error: 'ERROR', auth_failure: 'AUTH FAILED' };
+    badge.textContent = labels[status] || String(status || 'OFFLINE').toUpperCase();
+    badge.title = error || '';
+  }
+  setSystemConnection(status, error);
 }
 
 function showQr(qr) {
