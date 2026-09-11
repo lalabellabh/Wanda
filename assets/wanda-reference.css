@@ -1,0 +1,59 @@
+/* Wanda Command Center — approved reference composition. Visual override only. */
+#opsPanel{--pink:#ff49c8;--pink2:#ff9be8;--violet:#a86cff;--green:#20efae;position:fixed;inset:0;width:100vw;height:100vh;padding:0;overflow:hidden!important;background:radial-gradient(circle at 50% 44%,rgba(255,38,194,.13),transparent 26%),radial-gradient(circle at 12% 82%,rgba(105,43,255,.12),transparent 30%),linear-gradient(145deg,#05020a,#12041a 48%,#08020d)}
+#opsPanel::before,#opsPanel::after{content:"";position:absolute;inset:-25%;pointer-events:none;z-index:0}
+#opsPanel::before{background:radial-gradient(circle at 50% 48%,transparent 0 17%,rgba(255,55,203,.06) 17.1% 17.25%,transparent 17.4% 27%,rgba(255,55,203,.05) 27.1% 27.2%,transparent 27.4% 39%,rgba(255,55,203,.04) 39.1% 39.2%,transparent 39.4%);animation:refAmbient 30s linear infinite}
+#opsPanel::after{background:radial-gradient(circle at 50% 52%,transparent 0 32%,rgba(255,57,204,.035) 33%,transparent 45%);filter:blur(24px)}
+#opsPanel .command-layout{position:relative;z-index:1;width:100%;height:100%;display:block}
+#opsPanel .sidebar,#opsPanel .workspace-top{display:none!important}
+#opsPanel .workspace{position:relative;width:100%;height:100%;min-width:0;overflow:hidden;display:block}
+#opsPanel .workspace::before{content:"";position:absolute;z-index:2;left:0;right:0;top:0;height:58px;border-bottom:1px solid rgba(255,72,201,.28);background:linear-gradient(180deg,rgba(10,2,15,.78),rgba(10,2,15,.18));pointer-events:none}
+
+/* Center stage */
+#opsPanel .hero-status{position:absolute;z-index:3;left:30.5%;top:62px;width:39%;height:55%;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:transparent;box-shadow:none}
+#opsPanel .hero-copy,#opsPanel .core-side-note{display:none!important}
+#opsPanel .hero-status::before{content:"";position:absolute;inset:2% 4%;border-radius:50%;background:radial-gradient(circle,transparent 0 29%,rgba(255,73,200,.10) 29.2% 29.35%,transparent 29.6% 42%,rgba(255,73,200,.07) 42.1% 42.25%,transparent 42.5% 55%,rgba(168,108,255,.055) 55.1% 55.25%,transparent 55.5%);animation:refOrbit 22s linear infinite}
+#opsPanel .hero-status::after{content:"";position:absolute;left:50%;top:50%;width:310px;height:310px;transform:translate(-50%,-50%);border:1px solid rgba(255,73,200,.12);border-radius:50%;box-shadow:0 0 90px rgba(255,43,195,.08),inset 0 0 80px rgba(168,108,255,.035)}
+#opsPanel .core-wrap{position:absolute;inset:0;height:100%;display:grid;place-items:center;align-content:center;z-index:4}
+#opsPanel .core-orbit{position:absolute;border-color:rgba(255,73,200,.27);box-shadow:0 0 25px rgba(255,73,200,.08)}
+#opsPanel .orbit-one{width:285px;height:285px;animation:refSpin 18s linear infinite}
+#opsPanel .orbit-two{width:350px;height:210px;border-color:rgba(168,108,255,.18);animation:refSpinReverse 24s linear infinite}
+
+/* Turn the existing core markup into a polished compact robot. */
+#opsPanel .hero-orb{position:relative;width:190px;height:235px;border:0;border-radius:0;background:transparent;box-shadow:none;animation:refFloat 5s ease-in-out infinite;z-index:5}
+#opsPanel .hero-orb::before{content:"";position:absolute;left:38px;bottom:34px;width:114px;height:91px;border-radius:48% 48% 42% 42%;background:linear-gradient(145deg,#fffaff,#f7d8f0 22%,#d995d5 58%,#8c4c9d);border:1px solid rgba(255,241,255,.86);box-shadow:0 10px 28px rgba(255,62,207,.18),0 0 35px rgba(255,55,204,.22),inset 0 -16px 25px rgba(92,22,100,.22);z-index:1}
+#opsPanel .hero-orb::after{content:"";position:absolute;left:33px;bottom:18px;width:124px;height:15px;border-radius:50%;border:2px solid rgba(255,67,206,.75);box-shadow:0 0 18px rgba(255,67,206,.65),0 0 48px rgba(255,67,206,.22);z-index:0}
+#opsPanel .orb-face{position:absolute;left:17px;top:5px;width:156px;height:112px;border-radius:48% 48% 43% 43%;background:linear-gradient(145deg,#fffaff,#f3d5ef 20%,#d18bd0 62%,#8b4b9d);border:1px solid rgba(255,242,255,.9);box-shadow:0 12px 35px rgba(255,63,207,.25),0 0 45px rgba(255,60,210,.18),inset 0 -20px 28px rgba(84,19,94,.18);z-index:3;transition:transform .12s ease-out}
+#opsPanel .orb-face::before{content:"";position:absolute;left:27px;top:20px;width:102px;height:69px;border-radius:48% 48% 45% 45%;background:radial-gradient(circle at 50% 45%,#1c0825,#09030f 68%,#020107);border:1px solid rgba(255,120,227,.35);box-shadow:inset 0 0 25px rgba(255,49,210,.18),0 0 18px rgba(255,59,212,.12)}
+#opsPanel .orb-eye{z-index:5;top:45px;width:17px;height:11px;border-radius:50% 50% 20% 20%;background:#fff;box-shadow:0 0 8px #ff57d2,0 0 18px rgba(255,55,211,.95)}
+#opsPanel .orb-eye.left{left:57px}#opsPanel .orb-eye.right{right:57px}#opsPanel .orb-smile{display:none!important}
+#opsPanel .petal{z-index:4;background:linear-gradient(145deg,#fff,#ffb0ed 42%,#d85ac7);box-shadow:0 0 18px rgba(255,70,211,.3)}
+#opsPanel .p1,#opsPanel .p2{width:28px;height:63px;top:128px;border-radius:60% 40% 55% 45%}.p1{left:17px;transform:rotate(28deg)}.p2{right:17px;transform:rotate(-28deg)}
+#opsPanel .p3,#opsPanel .p4{display:none!important}
+#opsPanel .core-name{position:absolute;z-index:7;bottom:5px;margin:0;font-size:22px;font-weight:900;letter-spacing:.32em;color:#ff8bdd;text-shadow:0 0 20px rgba(255,65,211,.75)}
+#opsPanel .core-subtitle{position:absolute;z-index:7;bottom:-10px;font-size:8px;color:#f8d9f3;opacity:.8}
+#opsPanel .live-pill{position:absolute;z-index:7;bottom:-32px;margin:0;font-size:7px;padding:5px 10px;border:1px solid rgba(48,239,174,.5);background:rgba(4,31,24,.75)}
+#opsPanel .core-tagline{position:absolute;z-index:7;bottom:-51px;font-size:8px;color:#f5bde9;opacity:.7}
+
+/* Panels */
+#opsPanel .systems-card,#opsPanel .quick-card,#opsPanel .summary-card,#opsPanel .activity-card,#opsPanel .assistant-card{position:absolute;z-index:4;margin:0;border-radius:16px;background:linear-gradient(145deg,rgba(22,7,29,.87),rgba(8,3,13,.93));border-color:rgba(255,72,201,.34);box-shadow:0 20px 55px rgba(0,0,0,.34),0 0 30px rgba(255,44,198,.05),inset 0 1px 0 rgba(255,255,255,.035)}
+#opsPanel .systems-card{left:12px;top:190px;width:30.4%;height:57%;padding:14px}
+#opsPanel .quick-card{right:12px;top:56px;width:30.4%;height:33%;padding:13px}
+#opsPanel .summary-card{right:12px;top:40.5%;width:30.4%;height:21%;padding:13px}
+#opsPanel .activity-card{left:12px;bottom:30px;width:49%;height:26%;padding:12px 14px;min-height:0}
+#opsPanel .assistant-card{right:12px;bottom:30px;width:49%;height:26%;padding:12px 14px;min-height:0}
+#opsPanel .systems-card h3,#opsPanel .quick-card h3,#opsPanel .summary-card h3{font-size:13px}
+#opsPanel .eyebrow{font-size:7px;letter-spacing:.21em;color:#ff9be8;opacity:.8}
+#opsPanel .system-list{gap:7px}#opsPanel .system-row{grid-template-columns:35px 1fr 8px;min-height:57px;padding:8px 10px;border-radius:11px;border-color:rgba(255,72,201,.25);background:linear-gradient(145deg,rgba(30,10,38,.82),rgba(10,5,16,.84))}
+#opsPanel .system-icon{width:31px;height:31px;border-radius:9px;background:rgba(255,55,204,.08);border-color:rgba(255,72,201,.23);color:#ff8fe1}
+#opsPanel .system-row b{font-size:9px}#opsPanel .system-row span{font-size:7px;color:#bba7bf;opacity:.7}#opsPanel .connection-dot{width:8px;height:8px}
+#opsPanel .quick-grid{gap:7px}#opsPanel .quick-action{min-height:61px;border-radius:11px;border-color:rgba(255,72,201,.25);background:linear-gradient(145deg,rgba(36,12,45,.78),rgba(13,6,19,.86))}
+#opsPanel .quick-action span{width:28px;height:28px;color:#ff8fe1;background:rgba(255,72,201,.08)}#opsPanel .quick-action b{font-size:8px}#opsPanel .quick-action small{font-size:6px;color:#b9a6bb;opacity:.65}#opsPanel .whatsapp-action span{color:#39efb0}
+#opsPanel .summary-grid{gap:7px}#opsPanel .summary-item{min-height:58px;padding:8px;border-radius:10px;border-color:rgba(255,72,201,.22);background:linear-gradient(145deg,rgba(33,11,42,.74),rgba(12,6,17,.82))}
+#opsPanel .summary-item span{width:27px;height:27px}#opsPanel .summary-item b{font-size:14px}#opsPanel .summary-item small{font-size:6px;color:#b9a6bb}
+#opsPanel .activity-feed{height:calc(100% - 34px);overflow:hidden}#opsPanel .activity-empty{font-size:9px}#opsPanel .activity-empty small{font-size:7px}
+#opsPanel .wanda-heading h2{font-size:11px}#opsPanel .messages{height:calc(100% - 69px);margin:7px 0;padding:8px;background:rgba(5,2,9,.55);border-color:rgba(255,72,201,.20)}
+#opsPanel .command-bar input{padding:8px 10px;font-size:8px}#opsPanel .command-bar button{padding:8px 10px;font-size:7px}#opsPanel .quick-commands{display:none}
+#opsPanel .footer-strip{position:absolute;z-index:5;left:0;right:0;bottom:7px;height:14px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:6px;letter-spacing:.25em;text-transform:uppercase;color:#d99bd0;opacity:.5}
+@keyframes refFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes refOrbit{to{transform:rotate(360deg)}}@keyframes refSpin{to{transform:rotate(360deg)}}@keyframes refSpinReverse{to{transform:rotate(-360deg)}}@keyframes refAmbient{to{transform:rotate(360deg)}}
+@media(max-width:1100px){#opsPanel .hero-status{left:29%;width:42%}#opsPanel .systems-card,#opsPanel .quick-card,#opsPanel .summary-card{width:31.2%}#opsPanel .activity-card,#opsPanel .assistant-card{width:48.7%}}
+@media(max-width:760px){#opsPanel{position:relative;height:auto;min-height:100vh;overflow:auto!important}#opsPanel .workspace{height:1810px;min-height:1810px}#opsPanel .hero-status{left:0;top:55px;width:100%;height:360px}#opsPanel .systems-card{left:10px;top:425px;width:calc(100% - 20px);height:330px}#opsPanel .quick-card{left:10px;right:auto;top:765px;width:calc(100% - 20px);height:250px}#opsPanel .summary-card{left:10px;right:auto;top:1025px;width:calc(100% - 20px);height:220px}#opsPanel .activity-card,#opsPanel .assistant-card{left:10px;right:auto;width:calc(100% - 20px);height:260px}#opsPanel .activity-card{top:1260px;bottom:auto}#opsPanel .assistant-card{top:1530px;bottom:auto}#opsPanel .footer-strip{top:1810px;bottom:auto}}
